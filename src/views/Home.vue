@@ -1,13 +1,20 @@
 <template>
-  <HelloWorld />
+  <div>123456</div>
 </template>
 
 <script>
-  import HelloWorld from '../components/HelloWorld'
 
-  export default {
-    components: {
-      HelloWorld
-    }
+export default {
+  components: {
+    
   }
+}
 </script>
+
+<style lang="scss" scoped>
+* {
+  border: 1px solid;
+  width: 100%;
+  height: 100%;
+}
+</style>
