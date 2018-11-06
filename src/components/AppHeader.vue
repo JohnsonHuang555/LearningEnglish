@@ -4,7 +4,7 @@
       <v-list>
         <v-list-tile>
           <v-list-tile-title class="title">
-            Learning
+            LOGO
           </v-list-tile-title>
         </v-list-tile>
       </v-list>
@@ -16,6 +16,7 @@
       <v-list-tile
         v-for="item in items"
         :key="item.title"
+        @click="GoPage(item.router)"
       >
         <v-list-tile-action>
           <v-icon>{{ item.icon }}</v-icon>
@@ -32,16 +33,21 @@
 <script>
 export default {
   name: 'app-header',
-  data () {
+  data() {
     return {
       items: [
-        { title: 'Home', icon: 'home', to: '/' },
-        { title: 'Vocabulary', icon: 'library_books', to: '/vocabulary' },
-        { title: 'Add', icon: 'library_add', to: '/add' },
-        { title: 'Quiz', icon: 'alarm', to: '/alarm' },
-        { title: 'About', icon: 'info', to: '/about' },
-        { title: 'Settings', icon: 'settings', to: '/settings' },
+        { title: 'Home', icon: 'home', router: '/' },
+        { title: 'Vocabulary', icon: 'library_books', router: '/vocabulary' },
+        { title: 'Add', icon: 'library_add', router: '/add' },
+        { title: 'Quiz', icon: 'alarm', router: '/alarm' },
+        { title: 'About', icon: 'info', router: '/about' },
+        { title: 'Settings', icon: 'settings', router: '/settings' },
       ],
+    }
+  },
+  methods: {
+    GoPage(router) {
+      this.$router.push(router)
     }
   }
 }

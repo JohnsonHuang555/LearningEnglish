@@ -4,6 +4,7 @@
     <v-content>
       <router-view/>
     </v-content>
+    <div class="poweredby">Powered by Johnson Huang</div>
   </v-app>
 </template>
 
@@ -22,3 +23,20 @@ export default {
   }
 }
 </script>
+
+<style lang="scss">
+* {
+  box-sizing: border-box;
+}
+
+.poweredby {
+  position: fixed;
+  bottom: 40px;
+  right: 40px;
+}
+
+.page-title {
+  font-size: 32px;
+}
+</style>
+

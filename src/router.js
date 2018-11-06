@@ -2,6 +2,11 @@ import Vue from 'vue'
 import Router from 'vue-router'
 import SignIn from './views/SignIn.vue'
 import Home from './views/Home.vue'
+import Vocabulary from './views/Vocabulary.vue'
+import AddVocabulary from './views/AddVocabulary.vue'
+import Quiz from './views/Quiz.vue'
+import About from './views/About.vue'
+import Settings from './views/Settings.vue'
 
 Vue.use(Router)
 
@@ -15,9 +20,34 @@ export default new Router({
       component: Home
     },
     {
-      path: '/signin',
+      path: '/sign-in',
       name: 'sign-in',
       component: SignIn
+    },
+    {
+      path: '/vocabulary',
+      name: 'vocabulary',
+      component: Vocabulary
+    },
+    {
+      path: '/add-vocabulary',
+      name: 'add-vocabulary',
+      component: AddVocabulary
+    },
+    {
+      path: '/quiz',
+      name: 'quiz',
+      component: Quiz
+    },
+    {
+      path: '/about',
+      name: 'about',
+      component: About
+    },
+    {
+      path: '/settings',
+      name: 'settings',
+      component: Settings
     },
     // {
     //   path: '/about',
