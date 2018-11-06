@@ -4,7 +4,7 @@
       <v-list>
         <v-list-tile>
           <v-list-tile-title class="title">
-            Application
+            Learning
           </v-list-tile-title>
         </v-list-tile>
       </v-list>
@@ -35,12 +35,12 @@ export default {
   data () {
     return {
       items: [
-        { title: 'Home', icon: 'dashboard' },
-        { title: 'Vocabulary', icon: 'library_books' },
-        { title: 'Add', icon: 'library_add' },
-        { title: 'Quiz', icon: 'alarm' },
-        { title: 'About', icon: 'info' },
-        { title: 'Settings', icon: 'settings' },
+        { title: 'Home', icon: 'home', to: '/' },
+        { title: 'Vocabulary', icon: 'library_books', to: '/vocabulary' },
+        { title: 'Add', icon: 'library_add', to: '/add' },
+        { title: 'Quiz', icon: 'alarm', to: '/alarm' },
+        { title: 'About', icon: 'info', to: '/about' },
+        { title: 'Settings', icon: 'settings', to: '/settings' },
       ],
     }
   }

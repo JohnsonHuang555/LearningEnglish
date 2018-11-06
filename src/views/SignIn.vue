@@ -1,6 +1,6 @@
 <template>
   <div>
-    <v-btn to="/home">Login</v-btn>
+    <v-btn to="/">Login</v-btn>
   </div>
 </template>
 
