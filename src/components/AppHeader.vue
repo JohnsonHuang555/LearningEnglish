@@ -38,8 +38,8 @@ export default {
       items: [
         { title: 'Home', icon: 'home', router: '/' },
         { title: 'Vocabulary', icon: 'library_books', router: '/vocabulary' },
-        { title: 'Add', icon: 'library_add', router: '/add' },
-        { title: 'Quiz', icon: 'alarm', router: '/alarm' },
+        { title: 'Add', icon: 'library_add', router: '/add-vocabulary' },
+        { title: 'Quiz', icon: 'alarm', router: '/quiz' },
         { title: 'About', icon: 'info', router: '/about' },
         { title: 'Settings', icon: 'settings', router: '/settings' },
       ],

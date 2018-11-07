@@ -46,13 +46,10 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-* {
-  border: 1px solid;
-}
 
 .container {
   height: 100%;
-  padding: 40px;
+  // padding: 40px;
 }
 
 .info-cards {
