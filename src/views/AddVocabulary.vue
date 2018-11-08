@@ -23,7 +23,7 @@
           placeholder="Your answer"
           solo
         ></v-text-field>
-        <v-btn large color="info">
+        <v-btn large color="info" @click="addVocabulary">
           ADD
         </v-btn>
       </v-flex>
@@ -41,6 +41,11 @@ export default {
   data() {
     return {
       
+    }
+  },
+  methods: {
+    addVocabulary() {
+      this.$store.dispatch('addVocabulary')
     }
   }
 }
