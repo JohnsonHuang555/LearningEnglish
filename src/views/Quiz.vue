@@ -19,7 +19,7 @@
             placeholder="Your answer"
             solo
           ></v-text-field>
-          <v-btn>ANSWER</v-btn>
+          <v-btn large color="info">ANSWER</v-btn>
         </div>
       </v-flex>
     </v-layout>
@@ -33,6 +33,8 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+
+$content: #949494;
 
 .time-area {
   display: flex;

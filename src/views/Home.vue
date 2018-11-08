@@ -35,10 +35,10 @@ export default {
   data() {
     return {
       infoCards: [
-        { icon: 'font_download', color: '#3F8ED2', title: 'Total words', value: 1000 },
-        { icon: 'error', color: '#D2583F', title: 'Wrong words', value: 500 },
+        { icon: 'font_download', color: 'info', title: 'Total words', value: 1000 },
+        { icon: 'error', color: 'error', title: 'Wrong words', value: 500 },
         { icon: 'alarm', color: '#3FD2CD', title: 'Total quizzes', value: 6 },
-        { icon: 'how_to_reg', color: '#D2923F', title: 'Login days', value: 30 },
+        { icon: 'how_to_reg', color: 'warning', title: 'Login days', value: 30 },
       ]
     }
   }
@@ -46,25 +46,29 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+$content: #949494;
 
 .container {
   height: 100%;
-  // padding: 40px;
 }
 
 .info-cards {
   padding: 20px;
+  background-color: #fff;
+  border-radius: 3px;
   .info-content {
     display: flex;
     justify-content: space-between;
     align-items: center;
     .content-title {
       font-size: 20px;
+      color: $content;
     }
   }
   .info-value {
     font-size: 40px;
     text-align: right;
+    color: $content;
   }
 }
 

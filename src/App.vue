@@ -1,7 +1,7 @@
 <template>
   <v-app>
     <app-header />
-    <v-content>
+    <v-content class="app-content">
       <router-view/>
     </v-content>
     <!-- <div class="poweredby">Powered by Johnson Huang</div> -->
@@ -25,11 +25,18 @@ export default {
 </script>
 
 <style lang="scss">
+
 * {
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
   box-sizing: border-box;
   font-family: custom-sans-serif;
-  border: 1px solid;
+  // border: 1px solid;
 }
+
+// ::-webkit-scrollbar { 
+//     display: none; 
+// }
 
 // 中文字體
 @font-face {
@@ -45,6 +52,10 @@ export default {
   unicode-range: U+00-024F;
 }
 
+.app-content {
+  background: #F5F5F5;
+}
+
 .poweredby {
   position: fixed;
   bottom: 40px;
@@ -53,6 +64,7 @@ export default {
 
 .page-title {
   font-size: 28px;
+  color: #949494;
 }
 </style>
 

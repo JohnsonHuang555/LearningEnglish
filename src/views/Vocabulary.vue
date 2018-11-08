@@ -23,7 +23,8 @@
         <div class="elevation-4 vocabulary">
           <v-layout row class="card-content">
             <v-flex xs1 d-flex justify-center>
-              <v-icon>star_border</v-icon>
+              <v-icon v-if="!vocabulary.isFavorite" color="warning">star_border</v-icon>
+              <v-icon v-else color="warning">star</v-icon>
             </v-flex>
             <v-flex xs3 class="words-info">{{ vocabulary.word }}</v-flex>
             <v-flex xs1 class="words-info">{{ vocabulary.partOfSpeech }}</v-flex>
@@ -33,7 +34,7 @@
               <v-icon>edit</v-icon>
             </v-flex>
             <v-flex xs1 d-flex justify-center>
-              <v-icon>delete</v-icon>
+              <v-icon color="error">delete</v-icon>
             </v-flex>
           </v-layout>
         </div>
@@ -71,17 +72,23 @@ export default {
 }
 
 .vocabulary {
+  background: #fff;
+  border-radius: 3px;
   .card-content {
     padding: 16px;
     display: flex;
     align-items: center;
     .words-info {
-      font-size: 20px;
+      font-size: 24px;
     }
     .quiz {
       opacity: 0.7;
     }
   }
+}
+
+i {
+  cursor: pointer;
 }
 </style>
 
