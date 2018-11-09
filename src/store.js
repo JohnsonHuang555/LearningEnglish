@@ -6,36 +6,58 @@ Vue.use(Vuex)
 
 export default new Vuex.Store({
   state: {
-    vocabulares: []
+    vocabularies: []
   },
   mutations: {
-
+    setVocabularies(state, payload) {
+      state.vocabularies = payload
+    },
+    addVocabulary(state, payload) {
+      state.vocabularies.push(payload)
+    }
   },
   actions: {
-    getVocabularies() {
+    getVocabularies({commit}) {
       database().ref('vocabularies').once('value')
         .then(data => {
+          const vocabularies = []
           const obj = data.val()
-          console.log(obj)
+          for (let key in obj) {
+            vocabularies.push({
+              id: key,
+              word: obj[key].word,
+              partOfSpeech: obj[key].partOfSpeech,
+              answer: obj[key].answer,
+              quizCount: obj[key].quizCount,
+              isFavorite: obj[key].isFavorite
+            })
+          }
+          commit('setVocabularies', vocabularies)
         })
         .catch(error => {
           console.log('get vocabularies error', error)
         })
     },
-    addVocabulary() {
-      database().ref('vocabularies').set({
+    addVocabulary({commit}) {
+      const vocabulary = {
         word: 'apple',
         partOfSpeech: 'n.',
-        answer: '蘋果',
+        answer: [],
         quizCount: 0,
         isFavorite: false
-      }, error => {
-        if (error) {
+      }
+      database().ref('vocabularies').push(vocabulary)
+        .then(data => {
+          // 塞入Key值
+          const key = data.key
+          commit('addVocabulary', {
+            ...vocabulary,
+            id: key
+          })
+        })
+        .catch((error) => {
           console.log('add vocabulary error', error)
-        } else {
-          console.log('add successfully!')
-        }
-      })
+        })
     }
   }
 })

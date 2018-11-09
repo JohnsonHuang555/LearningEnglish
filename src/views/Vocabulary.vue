@@ -49,13 +49,11 @@ export default {
   data() {
     return {
       items: ['All', 'Favorite', 'Wrong words'],
-      vocabularies: [
-        { id: 1, word: 'apple', partOfSpeech: 'n.', answer: '蘋果', quizCount: 5, isFavorite: false },
-        { id: 2, word: 'banana', partOfSpeech: 'n.', answer: '香蕉', quizCount: 3, isFavorite: false },
-        { id: 3, word: 'claver', partOfSpeech: 'adj.', answer: '聰明的', quizCount: 15, isFavorite: true },
-        { id: 4, word: 'device', partOfSpeech: 'n.', answer: '設備', quizCount: 8, isFavorite: true },
-        { id: 5, word: 'eat', partOfSpeech: 'v.', answer: '吃', quizCount: 2, isFavorite: false },
-      ]
+    }
+  },
+  computed: {
+    vocabularies() {
+      return this.$store.state.vocabularies
     }
   }
 }

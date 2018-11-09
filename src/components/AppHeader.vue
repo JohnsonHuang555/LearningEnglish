@@ -26,7 +26,7 @@
           @click="GoPage(item.router)"
         >
           <v-list-tile-action>
-            <v-icon :color="item.router === $route.path ? 'info' : 'accent'">{{ item.icon }}</v-icon>
+            <v-icon :color="item.router === $route.path ? 'primary' : 'accent'">{{ item.icon }}</v-icon>
           </v-list-tile-action>
 
           <v-list-tile-content>

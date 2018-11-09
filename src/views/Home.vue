@@ -10,7 +10,7 @@
             <v-icon large :color="card.color">{{ card.icon }}</v-icon>
             <span class="content-title">{{ card.title }}</span>
           </div>
-          <div class="info-value">{{ card.value }}</div>
+          <div class="info-value">{{ getValue(card.id) }}</div>
         </div>
       </v-flex>
     </v-layout>
@@ -35,11 +35,25 @@ export default {
   data() {
     return {
       infoCards: [
-        { icon: 'font_download', color: 'info', title: 'Total words', value: 1000 },
-        { icon: 'error', color: 'error', title: 'Wrong words', value: 500 },
-        { icon: 'alarm', color: '#3FD2CD', title: 'Total quizzes', value: 6 },
-        { icon: 'how_to_reg', color: 'warning', title: 'Login days', value: 30 },
+        { id: 1, icon: 'font_download', color: 'primary', title: 'Total words' },
+        { id: 2, icon: 'error', color: 'error', title: 'Wrong words' },
+        { id: 3, icon: 'alarm', color: '#3FD2CD', title: 'Total quizzes' },
+        { id: 4, icon: 'how_to_reg', color: 'warning', title: 'Login days' },
       ]
+    }
+  },
+  methods: {
+    getValue(id) {
+      switch (id) {
+        case 1:
+          return this.$store.state.vocabularies.length
+        case 2:
+          return 0
+        case 3:
+          return 0
+        case 4:
+          return 1
+      }
     }
   }
 }
