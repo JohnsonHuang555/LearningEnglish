@@ -4,7 +4,7 @@
       <v-flex xs12 class="page-title">Add new vocabulary</v-flex>
     </v-layout>
     <v-layout>
-      <v-flex xs4>
+      <v-flex xs5>
         <div class="btn-group">
           <v-text-field
             class="text-input mb-4"
@@ -25,26 +25,36 @@
             solo
             v-model="answer1"
           ></v-text-field>
-          <v-btn v-if="addCount === 2" class="btn-add" flat icon color="accent">
+          <v-btn v-if="addCount < 2" class="btn-add" flat icon color="accent" @click="addMoreAnswer">
             <v-icon medium>add_circle</v-icon>
           </v-btn>
         </div>
-        <v-text-field
-          v-if="addCount === 1"
-          class="text-input"
-          label="Solo"
-          placeholder="Your answer"
-          solo
-          v-model="answer2"
-        ></v-text-field>
-        <v-text-field
-          v-if="addCount === 2"
-          class="text-input mb-4"
-          label="Solo"
-          placeholder="Your answer"
-          solo
-          v-model="answer3"
-        ></v-text-field>
+        <div class="btn-group">
+          <v-text-field
+            v-if="addCount >= 1"
+            class="text-input"
+            label="Solo"
+            placeholder="Your answer"
+            solo
+            v-model="answer2"
+          ></v-text-field>
+          <v-btn v-if="addCount >= 1" class="btn-add" flat icon color="error" @click="removeAnswer">
+            <v-icon medium>remove_circle</v-icon>
+          </v-btn>
+        </div>
+        <div class="btn-group">
+          <v-text-field
+            v-if="addCount === 2"
+            class="text-input mb-4"
+            label="Solo"
+            placeholder="Your answer"
+            solo
+            v-model="answer3"
+          ></v-text-field>
+          <v-btn v-if="addCount === 2" class="btn-add" flat icon color="error" @click="removeAnswer">
+            <v-icon medium>remove_circle</v-icon>
+          </v-btn>
+        </div>
         <v-btn large color="primary" @click="addVocabulary">
           ADD
         </v-btn>
@@ -58,7 +68,7 @@
 </template>
 
 <script>
-import axios from 'axios'
+// import axios from 'axios'
 
 export default {
   name: 'add-vocabulary',
@@ -71,17 +81,32 @@ export default {
       addCount: 0
     }
   },
-  watch: {
-    newVocabulary(val) {
-
-    }
-  },
   methods: {
+    addMoreAnswer() {
+      this.addCount++
+    },
+    removeAnswer() {
+      this.addCount--
+    },
     addVocabulary() {
-      const data = {
-
+      let arrAnswer = []
+      if (this.addCount === 2) {
+        arrAnswer.push(this.answer1)
+        arrAnswer.push(this.answer2)
+        arrAnswer.push(this.answer3)
+      } else if (this.addCount === 1) {
+        arrAnswer.push(this.answer1)
+        arrAnswer.push(this.answer2)
+      } else {
+        arrAnswer.push(this.answer1)
       }
-      this.$store.dispatch('addVocabulary')
+
+      const data = {
+        word: this.newVocabulary,
+        answers: arrAnswer,
+        partOfSpeech: 'noun'
+      }
+      this.$store.dispatch('addVocabulary', data)
     }
   }
 }
@@ -92,7 +117,7 @@ export default {
 $error: #D2583F;
 
 .text-input {
-  max-width: 450px;
+  max-width: 300px;
 }
 
 .btn-group {

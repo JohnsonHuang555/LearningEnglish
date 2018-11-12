@@ -38,11 +38,11 @@ export default new Vuex.Store({
           console.log('get vocabularies error', error)
         })
     },
-    addVocabulary({commit}) {
+    addVocabulary({commit}, payload) {
       const vocabulary = {
-        word: 'apple',
-        partOfSpeech: 'n.',
-        answer: [],
+        word: payload.word,
+        partOfSpeech: payload.partOfSpeech,
+        answers: payload.answers,
         quizCount: 0,
         isFavorite: false
       }
