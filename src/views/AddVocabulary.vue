@@ -12,6 +12,7 @@
             placeholder="New word"
             solo
             v-model="newVocabulary"
+            @input="debounceInput"
           ></v-text-field>
           <v-btn class="btn-add" disabled flat icon>
             <v-icon medium>check</v-icon>
@@ -68,20 +69,35 @@
 </template>
 
 <script>
-// import axios from 'axios'
+import axios from 'axios'
+import _ from 'lodash'
 
 export default {
   name: 'add-vocabulary',
   data() {
     return {
       newVocabulary: '',
+      partOfSpeech: '',
       answer1: '',
       answer2: '',
       answer3: '',
-      addCount: 0
+      addCount: 0,
+      apiKey: '5a1d59fba2c80d6e9a20b0c83da02b0a4c862a9668479c8f2'
     }
   },
   methods: {
+    debounceInput: _.debounce(function(e) {
+      if (e) {
+        axios.get(`https://api.wordnik.com/v4/word.json/${e}/definitions?useCanonical=false&limit=200&api_key=5a1d59fba2c80d6e9a20b0c83da02b0a4c862a9668479c8f2`)
+          .then(res => {
+            console.log(res)
+            this.partOfSpeech = res.data[0].partOfSpeech
+          })
+          .catch(error => {
+            console.log(error)
+          })
+      }
+    }, 1000),
     addMoreAnswer() {
       this.addCount++
     },
@@ -104,7 +120,7 @@ export default {
       const data = {
         word: this.newVocabulary,
         answers: arrAnswer,
-        partOfSpeech: 'noun'
+        partOfSpeech: this.partOfSpeech
       }
       this.$store.dispatch('addVocabulary', data)
     }
