@@ -14,8 +14,13 @@
             v-model="newVocabulary"
             @input="debounceInput"
           ></v-text-field>
-          <v-btn class="btn-add" disabled flat icon>
-            <v-icon medium>check</v-icon>
+          <v-btn
+            :loading="inputingWord"
+            class="btn-add"
+            flat
+            disabled
+            icon>
+            <v-icon medium>{{ hintMsg }}</v-icon>
           </v-btn>
         </div>
         <div class="btn-group">
@@ -56,7 +61,7 @@
             <v-icon medium>remove_circle</v-icon>
           </v-btn>
         </div>
-        <v-btn large color="primary" @click="addVocabulary">
+        <v-btn :disabled="isDisableAdd" large color="primary" @click="addVocabulary">
           ADD
         </v-btn>
       </v-flex>
@@ -65,6 +70,11 @@
         <p>Lorem ipsum dolor sit amet, consectetur  elit, sed do eiusmod tempor incididunt. Ldefss amess ai klott steds hello world.</p>
       </v-flex>
     </v-layout>
+    <app-snackbar
+      :text="errorMsg !== '' ? errorMsg: 'Add successfully'"
+      :color="errorMsg !== '' ? 'error': 'success'"
+      @onDismissed="dismissedHandler"
+      v-if="isShowSnackbar" />   
   </v-container>
 </template>
 
@@ -82,19 +92,51 @@ export default {
       answer2: '',
       answer3: '',
       addCount: 0,
-      apiKey: '5a1d59fba2c80d6e9a20b0c83da02b0a4c862a9668479c8f2'
+      apiKey: '4ff5d803e06e172e41013c7c4046dc1285cf94b20ceebb66c',
+      inputingWord: false,
+      hintMsg: '',
+      isShowSnackbar: false
+    }
+  },
+  watch: {
+    newVocabulary(val) {
+      if (val) {
+        this.inputingWord = true
+      } else {
+        this.hintMsg = ''
+        this.inputingWord = false
+      }
+    }
+  },
+  computed: {
+    isDisableAdd() {
+      if (this.newVocabulary === '' || this.answer1 === '') {
+        return true
+      } else {
+        return false
+      }
+    },
+    errorMsg() {
+      return this.$store.state.errorMsg
     }
   },
   methods: {
     debounceInput: _.debounce(function(e) {
-      if (e) {
-        axios.get(`https://api.wordnik.com/v4/word.json/${e}/definitions?useCanonical=false&limit=200&api_key=5a1d59fba2c80d6e9a20b0c83da02b0a4c862a9668479c8f2`)
+      if (e) {        
+        axios.get(`https://api.wordnik.com/v4/word.json/${e}/definitions?useCanonical=false&limit=200&api_key=${this.apiKey}`)
           .then(res => {
-            console.log(res)
-            this.partOfSpeech = res.data[0].partOfSpeech
+            this.inputingWord = false
+            // 表示有此單字
+            if (res.data.length > 0) {
+              this.hintMsg = 'check'
+              this.partOfSpeech = res.data[0].partOfSpeech
+            } else {
+              this.hintMsg = 'error_outline'
+              this.partOfSpeech = ''
+            }
           })
-          .catch(error => {
-            console.log(error)
+          .catch(() => {
+            console.log('Can not find the word!')
           })
       }
     }, 1000),
@@ -105,6 +147,7 @@ export default {
       this.addCount--
     },
     addVocabulary() {
+      this.isShowSnackbar = true // HARD CODE
       let arrAnswer = []
       if (this.addCount === 2) {
         arrAnswer.push(this.answer1)
@@ -123,6 +166,16 @@ export default {
         partOfSpeech: this.partOfSpeech
       }
       this.$store.dispatch('addVocabulary', data)
+
+      this.newVocabulary = ''
+      this.partOfSpeech = ''
+      this.answer1 = ''
+      this.answer2 = ''
+      this.answer3 = ''
+      this.addCount = 0
+    },
+    dismissedHandler () {
+      this.isShowSnackbar = false
     }
   }
 }

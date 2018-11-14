@@ -4,8 +4,10 @@ import App from './App.vue'
 import router from './router'
 import store from './store'
 import { initializeApp } from 'firebase'
+import SnackbarCmp from './components/Shared/Snackbar.vue'
 
 Vue.config.productionTip = false
+Vue.component('app-snackbar', SnackbarCmp)
 
 new Vue({
   router,

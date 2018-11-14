@@ -9,26 +9,32 @@
       </v-flex>
     </v-layout>
     <v-layout class="question-layout">
-      <v-flex d-flex justify-center align-center>
-        <div class="question-content">
-          <div class="question-title mb-4">Question</div>
-          <h1 class="mb-4">蘋果</h1>
-          <v-text-field
-            class="mb-5"
-            label="Solo"
-            placeholder="Your answer"
-            solo
-          ></v-text-field>
-          <v-btn large color="info">ANSWER</v-btn>
-        </div>
+      <v-flex d-flex justify-center align-center>        
+        <quiz-prepare />
+        <quizzing v-if="false"/>
+        <quiz-result v-if="false"/>
       </v-flex>
     </v-layout>
   </v-container>
 </template>
 
 <script>
+import QuizPrepare from '@/components/QuizPrepare.vue'
+import Quizzing from '@/components/Quizzing.vue'
+import QuizResult from '@/components/QuizResult.vue'
+
 export default {
-  name: 'quiz'
+  name: 'quiz',
+  components: {
+    QuizPrepare,
+    Quizzing,
+    QuizResult
+  },
+  data() {
+    return {
+      time: 600000, // second 10 minutes
+    }
+  }
 }
 </script>
 

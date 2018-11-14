@@ -6,9 +6,17 @@ Vue.use(Vuex)
 
 export default new Vuex.Store({
   state: {
-    vocabularies: []
+    vocabularies: [],
+    loading: false,
+    errorMsg: ''
   },
   mutations: {
+    setLoading(state, payload) {
+      state.loading = payload
+    },
+    setErrorMsg(state, payload) {
+      state.errorMsg = payload
+    },
     setVocabularies(state, payload) {
       state.vocabularies = payload
     },
@@ -39,6 +47,7 @@ export default new Vuex.Store({
         })
     },
     addVocabulary({commit}, payload) {
+      commit('setLoading', true)
       const vocabulary = {
         word: payload.word,
         partOfSpeech: payload.partOfSpeech,
@@ -54,8 +63,11 @@ export default new Vuex.Store({
             ...vocabulary,
             id: key
           })
+          commit('setLoading', false)
         })
         .catch((error) => {
+          commit('setErrorMsg', 'Add fail!')
+          commit('setLoading', false)
           console.log('add vocabulary error', error)
         })
     }
