@@ -1,6 +1,7 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
 import { database } from 'firebase'
+import moment from 'moment'
 
 Vue.use(Vuex)
 
@@ -8,7 +9,11 @@ export default new Vuex.Store({
   state: {
     vocabularies: [],
     loading: false,
-    errorMsg: ''
+    errorMsg: '',
+    quizTime: 600, // 10 Minutes
+    quizQuestions: [],
+    today: moment().format("YYYY-MM-DD"),
+    questionCount: 10 // 總題數可以被設定
   },
   mutations: {
     setLoading(state, payload) {
@@ -22,11 +27,15 @@ export default new Vuex.Store({
     },
     addVocabulary(state, payload) {
       state.vocabularies.push(payload)
+    },
+    setQuizQuetions(state, payload) {
+      state.quizQuestions = payload
     }
   },
   actions: {
     getVocabularies({commit}) {
-      database().ref('vocabularies').once('value')
+      commit('setLoading', true)
+      database().ref('vocabularies').child('2018-11-16').once('value')
         .then(data => {
           const vocabularies = []
           const obj = data.val()
@@ -35,27 +44,30 @@ export default new Vuex.Store({
               id: key,
               word: obj[key].word,
               partOfSpeech: obj[key].partOfSpeech,
-              answer: obj[key].answer,
+              answers: obj[key].answers,
               quizCount: obj[key].quizCount,
               isFavorite: obj[key].isFavorite
             })
           }
+
+          commit('setLoading', false)
           commit('setVocabularies', vocabularies)
         })
         .catch(error => {
           console.log('get vocabularies error', error)
         })
     },
-    addVocabulary({commit}, payload) {
+    addVocabulary({state,commit}, payload) {
       commit('setLoading', true)
       const vocabulary = {
         word: payload.word,
         partOfSpeech: payload.partOfSpeech,
         answers: payload.answers,
         quizCount: 0,
-        isFavorite: false
+        isFavorite: false,
+        dateTime: state.today
       }
-      database().ref('vocabularies').push(vocabulary)
+      database().ref('vocabularies/' + state.today).push(vocabulary)
         .then(data => {
           // 塞入Key值
           const key = data.key
@@ -63,6 +75,7 @@ export default new Vuex.Store({
             ...vocabulary,
             id: key
           })
+
           commit('setLoading', false)
         })
         .catch((error) => {
@@ -70,6 +83,34 @@ export default new Vuex.Store({
           commit('setLoading', false)
           console.log('add vocabulary error', error)
         })
+    },
+    getQuizQuestions({state, commit}) {
+      commit('setLoading', true)
+      database().ref('vocabularies/' + state.today).once('value')
+        .then(data => {
+          const questions = []
+          const obj = data.val()
+          for(let key in obj) {
+            // 問題為中文，答案為英文
+            questions.push({
+              id: key,
+              questions: obj[key].answers,
+              answer: obj[key].word
+            })
+          }
+          
+          commit('setLoading', false)
+          commit('setQuizQuetions', questions)
+        })
+        .catch(error => {
+          console.log(error)
+          commit('setLoading', false)
+        })
+    }
+  },
+  getters: {
+    getQuizTime(state) {
+      return state.quizTime
     }
   }
 })

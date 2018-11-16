@@ -161,7 +161,7 @@ export default {
       }
 
       const data = {
-        word: this.newVocabulary,
+        word: this.newVocabulary.toLowerCase(),
         answers: arrAnswer,
         partOfSpeech: this.partOfSpeech
       }

@@ -1,14 +1,18 @@
 <template>
   <div class="question-content">
-    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
-tempor incididunt ut labore et dolore magna aliqua.</p>
-    <v-btn large color="primary">START</v-btn>
+    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+    <v-btn large color="primary" @click="startQuiz">START</v-btn>
   </div>
 </template>
 
 <script>
 export default {
-  name: 'quiz-prepare'
+  name: 'quiz-prepare',
+  methods: {
+    startQuiz() {    
+      this.$emit('startQuiz')
+    }
+  }
 }
 </script>
 
@@ -30,7 +34,7 @@ export default {
 }
 
 p {
-  font-size: 30px;
+  font-size: 24px;
   max-width: 300px;
 }
 
