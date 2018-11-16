@@ -30,6 +30,9 @@ export default new Vuex.Store({
     },
     setQuizQuetions(state, payload) {
       state.quizQuestions = payload
+    },
+    clearQuizQuestions(state) {
+      state.quizQuestions = []
     }
   },
   actions: {
@@ -95,7 +98,10 @@ export default new Vuex.Store({
             questions.push({
               id: key,
               questions: obj[key].answers,
-              answer: obj[key].word
+              answer: obj[key].word,
+              quizCount: obj[key].quizCount,
+              isFavorite: obj[key].isFavorite,
+              partOfSpeech: obj[key].partOfSpeech,
             })
           }
           
@@ -106,6 +112,9 @@ export default new Vuex.Store({
           console.log(error)
           commit('setLoading', false)
         })
+    },
+    clearQuizQuestions({commit}) {
+      commit('clearQuizQuestions')
     }
   },
   getters: {

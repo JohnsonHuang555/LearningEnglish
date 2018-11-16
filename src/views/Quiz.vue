@@ -3,7 +3,7 @@
     <v-layout row class="mb-4">
       <v-flex xs6 class="page-title">Quiz</v-flex>
       <v-flex xs6 class="time-area" align-center justify-end>
-        <h2 class="mr-5">1 / {{ questionCount }}</h2>
+        <h2 class="mr-5">{{ currentQuestionNumber }} / {{ questionCount }}</h2>
         <v-icon medium class="mr-2" :color="remainTimeAlert ? 'error': 'content'">alarm</v-icon>
         <h2 :class="{'remain-alert': remainTimeAlert }">{{ convertSeconds(quizTime - counter) }}</h2>
       </v-flex>
@@ -11,7 +11,10 @@
     <v-layout class="question-layout">
       <v-flex d-flex justify-center align-center>        
         <quiz-prepare v-if="quizStatus === 0" @startQuiz="startQuizHandler"/>
-        <quizzing v-if="quizStatus === 1"/>
+        <quizzing
+          v-if="quizStatus === 1 && !isLoading"
+          @nextQuestion="nextQuestionHandler"
+          @quizResult="quizResultHandler"/>
         <quiz-result v-if="quizStatus === 2"/>
       </v-flex>
     </v-layout>
@@ -37,7 +40,8 @@ export default {
       counter: 0,
       quizStatus: 0, // 0 prepare, 1 quizzing, 2 result
       currentQuestionNumber: 1, // 當前題號
-      intervalId: null // 儲存計時器
+      intervalId: null, // 儲存計時器
+      quizResult: [],
     }
   },
   computed: {
@@ -53,6 +57,9 @@ export default {
     },
     questionCount() {
       return this.$store.state.questionCount
+    },
+    isLoading() {
+      return this.$store.state.loading
     }
   },
   methods: {
@@ -71,7 +78,19 @@ export default {
       const min = Math.floor(s / 60)
       const sec = s % 60
       return moment(`'${min}'+'${sec}'`, "mss").format("mm:ss")
+    },
+    nextQuestionHandler(val) {
+      // 更改當前題號
+      this.currentQuestionNumber = val
+    },
+    quizResultHandler(res) {
+      this.quizStatus++
+      this.quizResult = res
     }
+  },
+  destroyed() {
+    // 離開考試，銷毀考試卷
+    this.$store.dispatch('clearQuizQuestions')
   }
 }
 </script>

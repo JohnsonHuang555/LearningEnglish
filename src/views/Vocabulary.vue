@@ -20,36 +20,20 @@
     </v-layout>
     <v-layout row wrap>
       <v-flex xs12 v-for="vocabulary in vocabularies" :key="vocabulary.id" class="mb-4">
-        <div class="elevation-4 vocabulary">
-          <v-layout row class="card-content">
-            <v-flex xs1 d-flex justify-center>
-              <v-icon v-if="!vocabulary.isFavorite" color="warning">star_border</v-icon>
-              <v-icon v-else color="warning">star</v-icon>
-            </v-flex>
-            <v-flex xs3 class="words-info">{{ vocabulary.word }}</v-flex>
-            <v-flex xs1 class="words-info">{{ vocabulary.partOfSpeech }}</v-flex>
-            <v-flex xs3 class="words-info">
-              <span v-for="(answer,index) in vocabulary.answers" :key="index">
-                {{ answer }}
-              </span>
-            </v-flex>
-            <v-flex xs2 class="words-info quiz">Quiz:&nbsp;{{ vocabulary.quizCount }}</v-flex>
-            <v-flex xs1 d-flex justify-center>
-              <v-icon>edit</v-icon>
-            </v-flex>
-            <v-flex xs1 d-flex justify-center>
-              <v-icon color="error">delete</v-icon>
-            </v-flex>
-          </v-layout>
-        </div>
+        <vocabulary-cmp :vocabulary="vocabulary"/>
       </v-flex>
     </v-layout>
   </v-container>
 </template>
 
 <script>
+import VocabularyCmp from '@/components/VocabularyCmp.vue'
+
 export default {
   name: 'vocabulary',
+  components: {
+    VocabularyCmp
+  },
   data() {
     return {
       items: ['All', 'Favorite', 'Wrong words'],
@@ -70,22 +54,6 @@ export default {
   align-items: center;
   .sort-icon {
     cursor: pointer;
-  }
-}
-
-.vocabulary {
-  background: #fff;
-  border-radius: 3px;
-  .card-content {
-    padding: 16px;
-    display: flex;
-    align-items: center;
-    .words-info {
-      font-size: 20px;
-    }
-    .quiz {
-      opacity: 0.7;
-    }
   }
 }
 
