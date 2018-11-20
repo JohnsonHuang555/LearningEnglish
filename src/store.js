@@ -10,9 +10,9 @@ export default new Vuex.Store({
     vocabularies: [],
     loading: false,
     errorMsg: '',
-    quizTime: 600, // 10 Minutes
+    quizTime: 60, // 10 Minutes
     quizQuestions: [],
-    today: moment().format("YYYY-MM-DD"),
+    today: moment("2018-11-16").format("YYYY-MM-DD"),
     questionCount: 10 // 總題數可以被設定
   },
   mutations: {
@@ -102,6 +102,8 @@ export default new Vuex.Store({
               quizCount: obj[key].quizCount,
               isFavorite: obj[key].isFavorite,
               partOfSpeech: obj[key].partOfSpeech,
+              word: obj[key].word, // 為了共用Vocabulary component 需改寫
+              answers: obj[key].answers
             })
           }
           

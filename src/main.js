@@ -3,11 +3,14 @@ import './plugins/vuetify'
 import App from './App.vue'
 import router from './router'
 import store from './store'
-import { initializeApp } from 'firebase'
 import SnackbarCmp from './components/Shared/Snackbar.vue'
+
+import { initializeApp } from 'firebase'
+import animate from 'animate.css'
 
 Vue.config.productionTip = false
 Vue.component('app-snackbar', SnackbarCmp)
+Vue.use(animate)
 
 new Vue({
   router,

@@ -3,19 +3,31 @@
     <v-layout row class="mb-4">
       <v-flex xs6 class="page-title">Quiz</v-flex>
       <v-flex xs6 class="time-area" align-center justify-end>
-        <h2 class="mr-5">{{ currentQuestionNumber }} / {{ questionCount }}</h2>
-        <v-icon medium class="mr-2" :color="remainTimeAlert ? 'error': 'content'">alarm</v-icon>
+        <h2 class="mr-5" v-if="quizStatus === 1">{{ currentQuestionNumber }} / {{ questionCount }}</h2>
+        <v-icon
+          medium
+          class="mr-2"
+          :class="remainTimeAlert ? 'animated infinite headShake': ''"
+          :color="remainTimeAlert ? 'error': 'content'"
+          >alarm</v-icon>
         <h2 :class="{'remain-alert': remainTimeAlert }">{{ convertSeconds(quizTime - counter) }}</h2>
       </v-flex>
     </v-layout>
-    <v-layout class="question-layout">
-      <v-flex d-flex justify-center align-center>        
+    <v-layout row wrap>
+      <v-flex xs12>        
         <quiz-prepare v-if="quizStatus === 0" @startQuiz="startQuizHandler"/>
         <quizzing
           v-if="quizStatus === 1 && !isLoading"
           @nextQuestion="nextQuestionHandler"
           @quizResult="quizResultHandler"/>
-        <quiz-result v-if="quizStatus === 2"/>
+        <quiz-result
+          v-if="quizStatus === 2"
+          :quizResult="quizResult"
+          @seeDetail="seeDetailHandler"/>
+        <quiz-detail
+          v-if="quizStatus === 3"
+          :quizResult="quizResult"
+          />
       </v-flex>
     </v-layout>
   </v-container>
@@ -25,6 +37,7 @@
 import QuizPrepare from '@/components/QuizPrepare.vue'
 import Quizzing from '@/components/Quizzing.vue'
 import QuizResult from '@/components/QuizResult.vue'
+import QuizDetail from '@/components/QuizDetail.vue'
 import { setInterval, clearInterval } from 'timers'
 import moment from 'moment'
 
@@ -33,15 +46,16 @@ export default {
   components: {
     QuizPrepare,
     Quizzing,
-    QuizResult
+    QuizResult,
+    QuizDetail
   },
   data() {
     return {
       counter: 0,
-      quizStatus: 0, // 0 prepare, 1 quizzing, 2 result
+      quizStatus: 0, // 0 prepare, 1 quizzing, 2 result, 3 detail
       currentQuestionNumber: 1, // 當前題號
       intervalId: null, // 儲存計時器
-      quizResult: [],
+      quizResult: [], // 考試結果，對完答案後
     }
   },
   computed: {
@@ -86,6 +100,10 @@ export default {
     quizResultHandler(res) {
       this.quizStatus++
       this.quizResult = res
+      clearInterval(this.intervalId)
+    },
+    seeDetailHandler() {
+      this.quizStatus++
     }
   },
   destroyed() {
@@ -111,9 +129,9 @@ $error: #D2583F;
   color: $error
 }
 
-.question-layout {
-  height: 75vh;
-}
+// .question-layout {
+//   height: 75vh;
+// }
 
 .question-content {
   display: flex;

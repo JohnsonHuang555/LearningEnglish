@@ -54,12 +54,11 @@ export default {
   },
   methods:{
     nextQuestion() {
-      this.answer = ''
       // 對答案
-      var objQuestion = this.quizQuestions[0]
+      var objQuestion = this.quizQuestions[this.questionNumber - 1]
       this.answerSheet.push({
         ...objQuestion,
-        isCorrect: this.quizQuestions[0].answer === this.answer ? true : false
+        isCorrect: this.quizQuestions[this.questionNumber - 1].answer === this.answer ? true : false
       })
 
       if (this.questionNumber !== this.$store.state.questionCount) {
@@ -68,6 +67,9 @@ export default {
       } else {
         this.isShowSubmit = true
       }
+
+      // 清空答案
+      this.answer = ''
     },
     answerSubmit() {
       this.$emit('quizResult', this.answerSheet)

@@ -19,7 +19,7 @@
       </v-flex>
     </v-layout>
     <v-layout row wrap>
-      <v-flex xs12 v-for="vocabulary in vocabularies" :key="vocabulary.id" class="mb-4">
+      <v-flex xs12 v-for="vocabulary in vocabularies" :key="vocabulary.id">
         <vocabulary-cmp :vocabulary="vocabulary"/>
       </v-flex>
     </v-layout>
