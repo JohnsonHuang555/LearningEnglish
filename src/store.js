@@ -10,9 +10,9 @@ export default new Vuex.Store({
     vocabularies: [],
     loading: false,
     errorMsg: '',
-    quizTime: 60, // 10 Minutes
+    quizTime: 600, // 10 Minutes
     quizQuestions: [],
-    today: moment("2018-11-16").format("YYYY-MM-DD"),
+    today: moment("2018-11-22").format("YYYY-MM-DD"),
     questionCount: 10 // 總題數可以被設定
   },
   mutations: {
@@ -37,6 +37,7 @@ export default new Vuex.Store({
   },
   actions: {
     getVocabularies({commit}) {
+      // 預設為當天
       commit('setLoading', true)
       database().ref('vocabularies').child('2018-11-16').once('value')
         .then(data => {

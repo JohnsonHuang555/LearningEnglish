@@ -129,7 +129,23 @@ export default {
             // 表示有此單字
             if (res.data.length > 0) {
               this.hintMsg = 'check'
-              this.partOfSpeech = res.data[0].partOfSpeech
+              switch (res.data[0].partOfSpeech) {
+                case 'verb-transitive':
+                  this.partOfSpeech = 'v.'
+                  break
+                case 'noun':
+                  this.partOfSpeech = 'n.'
+                  break
+                case 'adverb':
+                  this.partOfSpeech = 'adv.'
+                  break
+                case 'adjective':
+                  this.partOfSpeech = 'adj.'
+                  break
+                default:
+                  this.partOfSpeech = res.data[0].partOfSpeech
+                  break;
+              }
             } else {
               this.hintMsg = 'error_outline'
               this.partOfSpeech = ''
