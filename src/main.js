@@ -24,6 +24,9 @@ new Vue({
       storageBucket: "learning-app-4c136.appspot.com",
       messagingSenderId: "440174769740"
     }),
+    // 初始化資料
+    this.$store.dispatch('getUserInfo')
+    this.$store.dispatch('getWrongWords')
     this.$store.dispatch('getVocabularies')
   },
   render: h => h(App)

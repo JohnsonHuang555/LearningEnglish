@@ -42,17 +42,25 @@ export default {
       ]
     }
   },
+  computed: {
+    userInfo() {
+      return this.$store.state.userInfo
+    }
+  },
   methods: {
     getValue(id) {
+      if (this.userInfo === null)
+        return
+
       switch (id) {
         case 1:
-          return this.$store.state.vocabularies.length
+          return this.userInfo.totalWords
         case 2:
-          return 0
+          return this.userInfo.wrongWordCount
         case 3:
-          return 0
+          return this.userInfo.totalQuizzes
         case 4:
-          return 1
+          return this.userInfo.loginDays
       }
     }
   }

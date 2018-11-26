@@ -27,8 +27,10 @@ export default {
     }
   },
   mounted() {
-    let score = this.quizResult.filter(item => item.isCorrect)
-    this.correctCount = (score.length / this.$store.state.questionCount) * 100
+    let wrongAnswer = this.quizResult.filter(item => !item.isCorrect)
+    this.correctCount = 100 - ((wrongAnswer.length / this.$store.state.questionCount) * 100)
+
+    this.$store.dispatch('setQuizResult', wrongAnswer)
   },
   computed: {
     animatedNumber() {

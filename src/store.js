@@ -7,12 +7,14 @@ Vue.use(Vuex)
 
 export default new Vuex.Store({
   state: {
+    userInfo: null,
     vocabularies: [],
+    wrongVocabularies: [], // 答錯的單字，錯誤清單
     loading: false,
     errorMsg: '',
     quizTime: 600, // 10 Minutes
     quizQuestions: [],
-    today: moment("2018-11-22").format("YYYY-MM-DD"),
+    today: moment("2018-11-26").format("YYYY-MM-DD"),
     questionCount: 10 // 總題數可以被設定
   },
   mutations: {
@@ -21,6 +23,12 @@ export default new Vuex.Store({
     },
     setErrorMsg(state, payload) {
       state.errorMsg = payload
+    },
+    setUserInfo(state, payload) {
+      state.userInfo = payload
+    },
+    setWrongWords(state, payload) {
+      state.wrongVocabularies = payload
     },
     setVocabularies(state, payload) {
       state.vocabularies = payload
@@ -31,15 +39,36 @@ export default new Vuex.Store({
     setQuizQuetions(state, payload) {
       state.quizQuestions = payload
     },
+    setQuizResult(state, payload) {
+      state.wrongVocabularies = payload
+    },
     clearQuizQuestions(state) {
       state.quizQuestions = []
     }
   },
   actions: {
+    getUserInfo({commit}) {
+      commit('setLoading', true)
+      var ref = database().ref('userInfo')
+      ref.off()
+      ref.on('value', data => {
+        commit('setUserInfo', data.val())
+        commit('setLoading', false)
+      })        
+    },
+    getWrongWords({commit}) {
+      commit('setLoading', true)
+      var ref = database().ref('wrongWords')
+      ref.off()
+      ref.on('value', data => {
+        commit('setWrongWords', data.val())
+        commit('setLoading', false)
+      })
+    },
     getVocabularies({commit}) {
       // 預設為當天
       commit('setLoading', true)
-      database().ref('vocabularies').child('2018-11-16').once('value')
+      database().ref('vocabularies').once('value')
         .then(data => {
           const vocabularies = []
           const obj = data.val()
@@ -63,6 +92,8 @@ export default new Vuex.Store({
     },
     addVocabulary({state,commit}, payload) {
       commit('setLoading', true)
+      var vocabularyRef = database().ref('vocabularies')
+      var updateWordRef = database().ref('userInfo')
       const vocabulary = {
         word: payload.word,
         partOfSpeech: payload.partOfSpeech,
@@ -71,7 +102,7 @@ export default new Vuex.Store({
         isFavorite: false,
         dateTime: state.today
       }
-      database().ref('vocabularies/' + state.today).push(vocabulary)
+      vocabularyRef.push(vocabulary)
         .then(data => {
           // 塞入Key值
           const key = data.key
@@ -80,6 +111,10 @@ export default new Vuex.Store({
             id: key
           })
 
+          updateWordRef.update({ totalWords:state.userInfo.totalWords + 1 })
+            .catch(error => {
+              console.log('update word error', error)    
+            })
           commit('setLoading', false)
         })
         .catch((error) => {
@@ -90,7 +125,8 @@ export default new Vuex.Store({
     },
     getQuizQuestions({state, commit}) {
       commit('setLoading', true)
-      database().ref('vocabularies/' + state.today).once('value')
+      var ref = database().ref('vocabularies').orderByChild('dateTime').equalTo(state.today)
+      ref.once('value')
         .then(data => {
           const questions = []
           const obj = data.val()
@@ -116,11 +152,36 @@ export default new Vuex.Store({
           commit('setLoading', false)
         })
     },
+    setQuizResult({state,commit}, payload) {
+      commit('setLoading', true)
+      var updateRef = database().ref('userInfo')
+      var createRef = database().ref('wrongWords')
+      updateRef.update({
+        wrongWordCount: state.userInfo.totalQuizzes + payload.length,
+        totalQuizzes: state.userInfo.totalQuizzes + 1
+      })
+      .then(() => {
+        commit('setQuizResult', payload)
+        commit('setLoading', false)
+      })
+      .catch(error => {
+        console.log(error)
+        commit('setLoading', false)
+      })
+
+      createRef.set(payload)
+      .catch(error => {
+        console.log('create wrong words error', error)
+      })
+    },
     clearQuizQuestions({commit}) {
       commit('clearQuizQuestions')
-    }
+    }    
   },
   getters: {
+    loadedVocabularies(state) {
+      return state.vocabularies
+    },
     getQuizTime(state) {
       return state.quizTime
     }

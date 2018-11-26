@@ -20,7 +20,7 @@
             flat
             disabled
             icon>
-            <v-icon medium>{{ hintMsg }}</v-icon>
+            <v-icon medium>{{ hintIcon }}</v-icon>
           </v-btn>
         </div>
         <div class="btn-group">
@@ -94,7 +94,7 @@ export default {
       addCount: 0,
       apiKey: '4ff5d803e06e172e41013c7c4046dc1285cf94b20ceebb66c',
       inputingWord: false,
-      hintMsg: '',
+      hintIcon: '',
       isShowSnackbar: false
     }
   },
@@ -103,7 +103,7 @@ export default {
       if (val) {
         this.inputingWord = true
       } else {
-        this.hintMsg = ''
+        this.hintIcon = ''
         this.inputingWord = false
       }
     }
@@ -128,7 +128,7 @@ export default {
             this.inputingWord = false
             // 表示有此單字
             if (res.data.length > 0) {
-              this.hintMsg = 'check'
+              this.hintIcon = 'check'
               switch (res.data[0].partOfSpeech) {
                 case 'verb-transitive':
                   this.partOfSpeech = 'v.'
@@ -142,12 +142,15 @@ export default {
                 case 'adjective':
                   this.partOfSpeech = 'adj.'
                   break
+                case 'interjection':
+                  this.partOfSpeech = 'int.'
+                  break
                 default:
                   this.partOfSpeech = res.data[0].partOfSpeech
                   break;
               }
             } else {
-              this.hintMsg = 'error_outline'
+              this.hintIcon = 'error_outline'
               this.partOfSpeech = ''
             }
           })

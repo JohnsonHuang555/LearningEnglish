@@ -2,32 +2,57 @@
   <v-container fluid grid-list-xl>
     <v-layout row class="mb-4">
       <v-flex xs6 class="page-title">Vocabulary</v-flex>
-      <v-flex xs2>
+      <v-flex xs2 offset-xs1>
         <v-select
-          :items="items"
-          label="Standard"
+          :items="filterItems"
+          :item-text="filterItems.text"
+          v-model="filterVal"
         ></v-select>
       </v-flex>
       <v-flex xs3>
         <v-text-field
           label="Search..."
           append-icon="search"
+          :loading="isSearching"
+          v-model="searchVal"
+          @input="debounceInput"
         ></v-text-field>
       </v-flex>
-      <v-flex xs1 class="sort">
-        <v-icon class="sort-icon">sort</v-icon>
-      </v-flex>
+      <!-- <v-flex xs1 class="sort">
+        <v-menu offset-y>
+          <v-icon class="sort-icon" slot="activator">sort</v-icon>
+          <v-list>
+            <v-list-tile
+              v-for="(item, index) in sortItems"
+              :key="index"
+            >
+              <v-list-tile-title>{{ item.text }}</v-list-tile-title>
+            </v-list-tile>
+          </v-list>
+        </v-menu>
+      </v-flex> -->
     </v-layout>
-    <v-layout row wrap>
-      <v-flex xs12 v-for="vocabulary in vocabularies" :key="vocabulary.id">
+    <transition-group name="list-complete" tag="div" class="layout row wrap" style="position: relative;">
+      <v-flex xs12 v-for="vocabulary in loadedVocabularies" :key="vocabulary.id" class="list-complete-item">
         <vocabulary-cmp :vocabulary="vocabulary"/>
       </v-flex>
-    </v-layout>
+      <v-flex v-if="loadedVocabularies.length === 0 && !loading" xs12 class="list-complete-item" key="alert">
+        <v-alert
+          :value="true"
+          color="error"
+          icon="error"
+        >
+          Data no found
+        </v-alert>
+      </v-flex>
+    </transition-group>
   </v-container>
 </template>
 
 <script>
 import VocabularyCmp from '@/components/VocabularyCmp.vue'
+import { database } from 'firebase'
+import _ from 'lodash'
 
 export default {
   name: 'vocabulary',
@@ -36,13 +61,108 @@ export default {
   },
   data() {
     return {
-      items: ['All', 'Favorite', 'Wrong words'],
+      vocabularies: [],
+      filterItems: [
+        { value: 0, text: 'All'},
+        { value: 1, text: 'Favorite'},
+        { value: 2, text: 'Wrong words'}
+      ],
+      filterVal: 0,
+      searchVal: '',
+      myFavoriteWords: [],
+      isSearching: false,      
+      // sortItems: [
+      //   { value: 0, text: 'Date'},
+      //   { value: 1, text: 'A-Z'},
+      // ],
+      // sortVal: 0,
     }
   },
-  computed: {
-    vocabularies() {
-      return this.$store.state.vocabularies
+  watch: {
+    searchVal(val) {
+      if (val) {
+        this.filterVal = 0
+        this.isSearching = 'primary'
+      } else {
+        this.isSearching = false
+      }
+    },
+    filterVal(val) {
+      if (val) {
+        this.searchVal = ''
+      }
     }
+  },
+  mounted() {
+    this.vocabularies = this.$store.getters.loadedVocabularies
+
+    var ref = database().ref('vocabularies').orderByChild('isFavorite').equalTo(true)
+      ref.off()
+      ref.on('value', data => {
+        const vocabularies = []
+        const obj = data.val()
+          for (let key in obj) {
+            vocabularies.push({
+              id: key,
+              word: obj[key].word,
+              partOfSpeech: obj[key].partOfSpeech,
+              answers: obj[key].answers,
+              quizCount: obj[key].quizCount,
+              isFavorite: obj[key].isFavorite
+            })
+          }
+        this.myFavoriteWords = vocabularies
+      })
+  },
+  computed: {
+    loading() {
+      return this.$store.state.loading
+    },
+    loadedVocabularies: {
+      get() {
+        if (this.filterVal === 2) {
+          return this.wrongVocabularies
+        } else if (this.filterVal === 1) {
+          return this.myFavoriteWords
+        } else if (this.searchVal) {
+          return this.vocabularies
+        } else {
+          return this.$store.getters.loadedVocabularies
+        }
+      },
+      set(newVal) {
+        this.vocabularies = newVal
+      }
+    },
+    wrongVocabularies() {
+      return this.$store.state.wrongVocabularies
+    }
+  },
+  methods: {
+    debounceInput: _.debounce(function(e) {
+      if (e) {
+        database().ref('vocabularies').orderByChild('word').equalTo(this.searchVal).once('value')
+        .then(data => {
+          this.isSearching = false
+          const vocabularies = []
+          const obj = data.val()
+            for (let key in obj) {
+              vocabularies.push({
+                id: key,
+                word: obj[key].word,
+                partOfSpeech: obj[key].partOfSpeech,
+                answers: obj[key].answers,
+                quizCount: obj[key].quizCount,
+                isFavorite: obj[key].isFavorite
+              })
+            }
+          this.loadedVocabularies = vocabularies
+        })
+        .catch(error => {
+          console.log('search error', error)
+        })
+      }
+    }, 1000),
   }
 }
 </script>
@@ -59,6 +179,21 @@ export default {
 
 i {
   cursor: pointer;
+}
+
+.list-complete-item {
+  transition: all 0.5s;
+  display: inline-block;
+}
+
+.list-complete-enter, .list-complete-leave-to {
+  opacity: 0;
+  transform: translateY(30px);
+}
+
+.list-complete-leave-active {
+  position: absolute;
+  width: 100%;
 }
 </style>
 
