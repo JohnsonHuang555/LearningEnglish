@@ -68,27 +68,24 @@ export default new Vuex.Store({
     getVocabularies({commit}) {
       // 預設為當天
       commit('setLoading', true)
-      database().ref('vocabularies').once('value')
-        .then(data => {
-          const vocabularies = []
-          const obj = data.val()
-          for (let key in obj) {
-            vocabularies.push({
-              id: key,
-              word: obj[key].word,
-              partOfSpeech: obj[key].partOfSpeech,
-              answers: obj[key].answers,
-              quizCount: obj[key].quizCount,
-              isFavorite: obj[key].isFavorite
-            })
-          }
-
-          commit('setLoading', false)
-          commit('setVocabularies', vocabularies)
-        })
-        .catch(error => {
-          console.log('get vocabularies error', error)
-        })
+      var ref = database().ref('vocabularies')
+      ref.off()
+      ref.on('value', data => {
+        const vocabularies = []
+        const obj = data.val()
+        for (let key in obj) {
+          vocabularies.push({
+            id: key,
+            word: obj[key].word,
+            partOfSpeech: obj[key].partOfSpeech,
+            answers: obj[key].answers,
+            quizCount: obj[key].quizCount,
+            isFavorite: obj[key].isFavorite
+          })
+        }
+        commit('setLoading', false)
+        commit('setVocabularies', vocabularies)
+      })
     },
     addVocabulary({state,commit}, payload) {
       commit('setLoading', true)
@@ -176,7 +173,26 @@ export default new Vuex.Store({
     },
     clearQuizQuestions({commit}) {
       commit('clearQuizQuestions')
-    }    
+    },
+    deleteVocabulary({state,commit} ,payload) {
+      commit('setLoading', true)
+      var ref = database().ref('vocabularies/' + payload)
+      var userInfoRef = database().ref('userInfo')
+
+      ref.remove()
+        .then(() => {
+          commit('setLoading', false)
+          userInfoRef.update({ totalWords:state.userInfo.totalWords - 1 })
+            .catch(error => {
+              console.log('update word error', error)    
+            })
+          console.log('delete successfully')
+        })
+        .catch(error => {
+          commit('setLoading', false)
+          console.log('delete fail', error)
+        })
+    }  
   },
   getters: {
     loadedVocabularies(state) {
