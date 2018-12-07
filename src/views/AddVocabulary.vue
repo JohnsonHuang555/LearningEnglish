@@ -8,12 +8,10 @@
         <div class="btn-group">
           <v-text-field
             class="text-input mb-4"
-            label="Solo"
             placeholder="New word"
-            solo
             v-model="newVocabulary"
             @input="debounceInput"
-          ></v-text-field>
+          ></v-text-field>          
           <v-btn
             :loading="inputingWord"
             class="btn-add"
@@ -21,14 +19,12 @@
             disabled
             icon>
             <v-icon medium>{{ hintIcon }}</v-icon>
-          </v-btn>
+          </v-btn>          
         </div>
         <div class="btn-group">
           <v-text-field
             class="text-input"
-            label="Solo"
             placeholder="Your answer"
-            solo
             v-model="answer1"
           ></v-text-field>
           <v-btn v-if="addCount < 2" class="btn-add" flat icon color="accent" @click="addMoreAnswer">
@@ -39,9 +35,7 @@
           <v-text-field
             v-if="addCount >= 1"
             class="text-input"
-            label="Solo"
             placeholder="Your answer"
-            solo
             v-model="answer2"
           ></v-text-field>
           <v-btn v-if="addCount >= 1" class="btn-add" flat icon color="error" @click="removeAnswer">
@@ -52,16 +46,15 @@
           <v-text-field
             v-if="addCount === 2"
             class="text-input mb-4"
-            label="Solo"
             placeholder="Your answer"
-            solo
+            @keyup.native.enter="addVocabulary"
             v-model="answer3"
           ></v-text-field>
           <v-btn v-if="addCount === 2" class="btn-add" flat icon color="error" @click="removeAnswer">
             <v-icon medium>remove_circle</v-icon>
           </v-btn>
         </div>
-        <v-btn :disabled="isDisableAdd" large color="primary" @click="addVocabulary">
+        <v-btn :disabled="isDisableAdd || hintIcon === 'error_outline'" large color="primary" @click="addVocabulary">
           ADD
         </v-btn>
       </v-flex>
@@ -74,7 +67,7 @@
       :text="errorMsg !== '' ? errorMsg: 'Add successfully'"
       :color="errorMsg !== '' ? 'error': 'success'"
       @onDismissed="dismissedHandler"
-      v-if="isShowSnackbar" />   
+      v-if="isShowSnackbar" />
   </v-container>
 </template>
 
@@ -166,7 +159,6 @@ export default {
       this.addCount--
     },
     addVocabulary() {
-      this.isShowSnackbar = true // HARD CODE
       let arrAnswer = []
       if (this.addCount === 2) {
         arrAnswer.push(this.answer1)
@@ -184,7 +176,12 @@ export default {
         answers: arrAnswer,
         partOfSpeech: this.partOfSpeech
       }
-      this.$store.dispatch('addVocabulary', data)
+      this.$store.dispatch('addVocabulary', data).then(() => {
+        this.isShowSnackbar = true
+        setTimeout(() => {
+          this.isShowSnackbar = false
+        }, 4000);
+      })
 
       this.newVocabulary = ''
       this.partOfSpeech = ''
