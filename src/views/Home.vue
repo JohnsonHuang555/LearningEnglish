@@ -14,24 +14,46 @@
         </div>
       </v-flex>
     </v-layout>
-    <v-layout row>
+    <v-layout row wrap>
       <v-flex xs6>
-        <img class="elevation-4" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRdueIeXzSQo5V-QLKcw4rcIbDMw5_rWW89w5bWZ11hWH7pibs3" alt="test">
+        <!-- <img class="elevation-4" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRdueIeXzSQo5V-QLKcw4rcIbDMw5_rWW89w5bWZ11hWH7pibs3" alt="test"> -->
+        <line-chart
+          id="line" 
+          :data="lineData"
+          xkey="year"
+          ykeys='["a", "b"]'
+          line-colors='["#FF6384", "#36A2EB"]'
+          grid="true"
+          grid-text-weight="bold"
+          resize="true">
+        </line-chart>
       </v-flex>
       <v-flex xs6>
-        <img class="elevation-4" src="https://4ff42o1826ugot79h41hchfc-wpengine.netdna-ssl.com/wp-content/uploads/2014/06/curved-line.png" alt="test">
+        <v-date-picker
+          v-model="date"
+          full-width
+          landscape
+          class="date-time elevation-4"
+        ></v-date-picker>
       </v-flex>
     </v-layout>
   </v-container>
 </template>
 
 <script>
+import Raphael from 'raphael/raphael'
+global.Raphael = Raphael
+
+import { LineChart } from 'vue-morris'
 
 export default {
-  name: 'home',
   components: {
-    
+    // DonutChart, 
+    // BarChart, 
+    LineChart, 
+    // AreaChart
   },
+  name: 'home',
   data() {
     return {
       infoCards: [
@@ -39,7 +61,14 @@ export default {
         { id: 2, icon: 'error', color: 'error', title: 'Wrong words' },
         { id: 3, icon: 'alarm', color: '#3FD2CD', title: 'Total quizzes' },
         { id: 4, icon: 'how_to_reg', color: 'warning', title: 'Login days' },
-      ]
+      ],
+      date: new Date().toISOString().substr(0, 10),
+      lineData: [
+        { year: '2013', a:10, b:5 },
+        { year: '2014', a:40, b:15 },
+        { year: '2015', a:20, b:25 },
+        { year: '2016', a:30, b:20 }
+      ],
     }
   },
   computed: {
@@ -92,6 +121,15 @@ $content: #949494;
     text-align: right;
     color: $content;
   }
+}
+
+.date-time {
+  border-radius: 5px;
+}
+
+.line-chart {
+  background: white;
+  padding: 10px;
 }
 
 img {

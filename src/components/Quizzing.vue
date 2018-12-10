@@ -1,20 +1,19 @@
 <template>
-  <div class="question-content">    
+  <div>
     <div v-if="!isShowSubmit" class="question-content">
       <div class="question-title mb-4">Question</div>
       <h1 class="mb-4">
-      <span
-        v-for="question in quizQuestions[questionNumber - 1].questions"
-        :key="question.id">
-        {{ question }}
-      </span>
+        <span
+          v-for="question in quizQuestions[questionNumber - 1].questions"
+          :key="question.id">
+            {{ question }}
+        </span>
       </h1>
       <v-text-field
         class="mb-5"
-        label="Solo"
         placeholder="Your answer"
-        solo
         v-model="answer"
+        @keyup.enter="nextQuestion"
       ></v-text-field>
       <v-btn        
         large
@@ -48,12 +47,16 @@ export default {
   },
   computed: {
     quizQuestions() {
-      let questions = this.$store.state.quizQuestions
+      let questions = this.$store.getters.quizQuestions
       return _.shuffle(questions)
     }
   },
   methods:{
     nextQuestion() {
+      if (this.answer === '') {
+        return
+      }
+
       // 對答案
       var objQuestion = this.quizQuestions[this.questionNumber - 1]
       this.answerSheet.push({

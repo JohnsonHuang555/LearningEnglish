@@ -1,6 +1,9 @@
 <template>
   <div class="question-content">
-    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+    <p class="mb-5">
+      <v-icon large color="secondary">info</v-icon>
+      Are you ready for quiz ?
+    </p>
     <v-btn large color="primary" @click="startQuiz">START</v-btn>
   </div>
 </template>
@@ -25,17 +28,11 @@ export default {
   align-items: center;
   justify-content: center;
   flex-direction: column;
-  .question-title {
-    font-size: 24px;
-  }
-  h1 {
-    font-weight: 500;
-  }
 }
 
 p {
-  font-size: 24px;
-  max-width: 300px;
+  font-size: 28px;
+  max-width: 400px;
 }
 
 </style>

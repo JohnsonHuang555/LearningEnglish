@@ -4,7 +4,7 @@
     <p>{{ animatedNumber }} %</p>
     <div class="actions">
       <v-btn color="secondary" @click="seeDetail">SEE DETAIL</v-btn>
-      <v-btn color="primary">SKIP</v-btn>
+      <v-btn color="primary" @click="skipResult">SKIP</v-btn>
     </div>
   </div>
 </template>
@@ -45,6 +45,9 @@ export default {
   methods: {
     seeDetail() {
       this.$emit('seeDetail')
+    },
+    skipResult() {
+      this.$emit('skipResult')
     }
   }
 }

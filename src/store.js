@@ -12,10 +12,11 @@ export default new Vuex.Store({
     wrongVocabularies: [], // 答錯的單字，錯誤清單
     loading: false,
     errorMsg: '',
-    quizTime: 600, // 10 Minutes
     quizQuestions: [],
     today: moment("2018-11-26").format("YYYY-MM-DD"),
-    questionCount: 10 // 總題數可以被設定
+    questionCount: 10, // 總題數
+    quizTime: 600, // 考試時間 (秒)
+    appLanguage: 0, // 0 En, 1 zh-tw
   },
   mutations: {
     setLoading(state, payload) {
@@ -44,6 +45,11 @@ export default new Vuex.Store({
     },
     clearQuizQuestions(state) {
       state.quizQuestions = []
+    },
+    saveSettings(state, payload) {
+      state.questionCount = payload.questionCount
+      state.quizTime = payload.quizTime
+      state.appLanguage = payload.language
     }
   },
   actions: {
@@ -192,14 +198,29 @@ export default new Vuex.Store({
           commit('setLoading', false)
           console.log('delete fail', error)
         })
-    }  
+    },
+    saveSettings({commit}, payload) {
+      commit('saveSettings', payload)
+    }
   },
   getters: {
     loadedVocabularies(state) {
       return state.vocabularies
     },
+    quizQuestions(state) {
+      return state.quizQuestions
+    },
     getQuizTime(state) {
       return state.quizTime
+    },
+    questionCount(state) {
+      return state.questionCount
+    },
+    quizTime(state) {
+      return state.quizTime / 60
+    },
+    language(state) {
+      return state.appLanguage
     }
   }
 })

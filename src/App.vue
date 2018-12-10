@@ -2,7 +2,12 @@
   <v-app>
     <app-header />
     <v-content class="app-content">
-      <router-view/>
+      <transition
+        name="fade"
+        mode="out-in"
+      >
+        <router-view/>
+      </transition>
     </v-content>
     <!-- <div class="poweredby">Powered by Johnson Huang</div> -->
   </v-app>
@@ -26,6 +31,9 @@ export default {
 
 <style lang="scss">
 
+$accent: #BBB;
+$info: #F5F5F5;
+
 * {
   -webkit-box-sizing: border-box;
   -moz-box-sizing: border-box;
@@ -37,6 +45,26 @@ export default {
 // ::-webkit-scrollbar { 
 //     display: none; 
 // }
+
+/* width */
+::-webkit-scrollbar {
+    width: 10px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  background: $info; 
+}
+ 
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: $accent;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: #555; 
+}
 
 // 中文字體
 @font-face {
@@ -66,5 +94,18 @@ export default {
   font-size: 28px;
   color: #949494;
 }
+
+.fade-enter-active,
+.fade-leave-active {
+  transition-duration: 0.2s;
+  transition-property: opacity;
+  transition-timing-function: ease;
+}
+
+.fade-enter,
+.fade-leave-active {
+  opacity: 0
+}
+
 </style>
 

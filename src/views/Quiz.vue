@@ -13,7 +13,7 @@
         <h2 :class="{'remain-alert': remainTimeAlert }">{{ convertSeconds(quizTime - counter) }}</h2>
       </v-flex>
     </v-layout>
-    <v-layout row wrap>
+    <v-layout row wrap class="question-layout">
       <v-flex xs12>        
         <quiz-prepare v-if="quizStatus === 0" @startQuiz="startQuizHandler"/>
         <quizzing
@@ -23,7 +23,8 @@
         <quiz-result
           v-if="quizStatus === 2"
           :quizResult="quizResult"
-          @seeDetail="seeDetailHandler"/>
+          @seeDetail="seeDetailHandler"
+          @skipResult="skipResultHandler"/>
         <quiz-detail
           v-if="quizStatus === 3"
           :quizResult="quizResult"
@@ -104,6 +105,9 @@ export default {
     },
     seeDetailHandler() {
       this.quizStatus++
+    },
+    skipResultHandler() {
+      this.quizStatus = 0
     }
   },
   destroyed() {
@@ -129,9 +133,12 @@ $error: #D2583F;
   color: $error
 }
 
-// .question-layout {
-//   height: 75vh;
-// }
+.question-layout {
+  height: 70vh;
+  display: flex;
+  justify-items: center;
+  align-items: center;
+}
 
 .question-content {
   display: flex;
@@ -147,4 +154,5 @@ $error: #D2583F;
     font-weight: 500;
   }
 }
+
 </style>

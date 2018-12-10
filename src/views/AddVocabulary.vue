@@ -54,7 +54,11 @@
             <v-icon medium>remove_circle</v-icon>
           </v-btn>
         </div>
-        <v-btn :disabled="isDisableAdd || hintIcon === 'error_outline'" large color="primary" @click="addVocabulary">
+        <v-btn
+          :disabled="isDisableAdd || hintIcon === 'error_outline'"
+          large
+          color="primary"
+          @click="addVocabulary">
           ADD
         </v-btn>
       </v-flex>
@@ -180,7 +184,7 @@ export default {
         this.isShowSnackbar = true
         setTimeout(() => {
           this.isShowSnackbar = false
-        }, 4000);
+        }, 4000)
       })
 
       this.newVocabulary = ''
