@@ -7,9 +7,6 @@ import SnackbarCmp from './components/Shared/Snackbar.vue'
 
 import { initializeApp } from 'firebase'
 import animate from 'animate.css'
-import $ from 'jquery'
-
-console.log($)
 
 Vue.config.productionTip = false
 Vue.component('app-snackbar', SnackbarCmp)

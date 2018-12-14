@@ -16,17 +16,7 @@
     </v-layout>
     <v-layout row wrap>
       <v-flex xs6>
-        <!-- <img class="elevation-4" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRdueIeXzSQo5V-QLKcw4rcIbDMw5_rWW89w5bWZ11hWH7pibs3" alt="test"> -->
-        <line-chart
-          id="line" 
-          :data="lineData"
-          xkey="year"
-          ykeys='["a", "b"]'
-          line-colors='["#FF6384", "#36A2EB"]'
-          grid="true"
-          grid-text-weight="bold"
-          resize="true">
-        </line-chart>
+        <img class="elevation-4" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRdueIeXzSQo5V-QLKcw4rcIbDMw5_rWW89w5bWZ11hWH7pibs3" alt="test">
       </v-flex>
       <v-flex xs6>
         <v-date-picker
@@ -41,17 +31,9 @@
 </template>
 
 <script>
-import Raphael from 'raphael/raphael'
-global.Raphael = Raphael
-
-import { LineChart } from 'vue-morris'
 
 export default {
   components: {
-    // DonutChart, 
-    // BarChart, 
-    LineChart, 
-    // AreaChart
   },
   name: 'home',
   data() {
@@ -63,12 +45,6 @@ export default {
         { id: 4, icon: 'how_to_reg', color: 'warning', title: 'Login days' },
       ],
       date: new Date().toISOString().substr(0, 10),
-      lineData: [
-        { year: '2013', a:10, b:5 },
-        { year: '2014', a:40, b:15 },
-        { year: '2015', a:20, b:25 },
-        { year: '2016', a:30, b:20 }
-      ],
     }
   },
   computed: {
