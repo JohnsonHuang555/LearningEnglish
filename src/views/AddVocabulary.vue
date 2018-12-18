@@ -55,6 +55,7 @@
           </v-btn>
         </div>
         <v-btn
+          class="mt-4"
           :disabled="isDisableAdd || hintIcon === 'error_outline'"
           large
           color="primary"

@@ -15,22 +15,46 @@
       </v-flex>
     </v-layout>
     <v-layout row wrap>
-      <v-flex xs6>
-        <img class="elevation-4" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRdueIeXzSQo5V-QLKcw4rcIbDMw5_rWW89w5bWZ11hWH7pibs3" alt="test">
+      <v-flex xs8>
+        <div class="card-radius learning-trend elevation-4">
+          <div class="mb-3">Learning Trend</div>
+          <!-- <img class="elevation-4" width="100%" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRdueIeXzSQo5V-QLKcw4rcIbDMw5_rWW89w5bWZ11hWH7pibs3" alt="test"> -->
+          <div v-if="isShowTrend">
+            <trend              
+              :data="trendData"
+              :gradient="['#6fa8dc', '#42b983', '#2c3e50']"
+              auto-draw
+              smooth>
+            </trend>
+            <div class="chart-tick">
+              <h4>1</h4>
+              <h4>{{ daysInMonth }}</h4>
+            </div>
+          </div>
+          <v-progress-circular
+            v-else
+            indeterminate
+            color="secondary"
+            :size="50"
+            :width="5"
+            class="progress-circle"
+          ></v-progress-circular>
+        </div>
       </v-flex>
-      <v-flex xs6>
+      <v-flex xs4>
         <v-date-picker
-          v-model="date"
           full-width
-          landscape
-          class="date-time elevation-4"
-        ></v-date-picker>
+          v-model="date"
+          class="card-radius elevation-4"
+          type="month"
+        ></v-date-picker>        
       </v-flex>
     </v-layout>
   </v-container>
 </template>
 
 <script>
+import moment from 'moment'
 
 export default {
   components: {
@@ -44,12 +68,27 @@ export default {
         { id: 3, icon: 'alarm', color: '#3FD2CD', title: 'Total quizzes' },
         { id: 4, icon: 'how_to_reg', color: 'warning', title: 'Login days' },
       ],
-      date: new Date().toISOString().substr(0, 10),
+      trendData: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      rate1: [0, 2, 5, 3, 10, 1, 10, 5, 10, 7, 5, 7, 10, 9, 10],
+      date: moment().format("YYYY-MM"),
+      isShowTrend: true,
     }
   },
   computed: {
     userInfo() {
       return this.$store.state.userInfo
+    },
+    daysInMonth() {
+      return moment(this.date).daysInMonth()
+    }
+  },
+  watch: {
+    date() {
+      this.isShowTrend = false
+      setTimeout(() => {
+        this.isShowTrend = true
+        this.trendData = this.rate1
+      }, 1000)
     }
   },
   methods: {
@@ -99,13 +138,30 @@ $content: #949494;
   }
 }
 
-.date-time {
-  border-radius: 5px;
+.card-radius {
+  background: white;
+  border-radius: 3px;
 }
 
-.line-chart {
-  background: white;
+.learning-trend {
+  font-size: 20px;
+  color: $content;
+  padding: 20px;
+}
+
+.chart-tick {
+  display: flex;
+  border-top: 1px solid $content;
+  padding-top: 15px;
+  justify-content: space-between;
   padding: 10px;
+  font-size: 16px;
+}
+
+.progress-circle {
+  margin: 10px;
+  transform: translateX(-50%);
+  left: 50%;
 }
 
 img {

@@ -4,15 +4,30 @@
       <v-icon large color="secondary">info</v-icon>
       Are you ready for quiz ?
     </p>
-    <v-btn large color="primary" @click="startQuiz">START</v-btn>
+    <v-btn large color="primary" :disabled="isEnableStartQuiz" @click="startQuiz">START</v-btn>
+    <v-alert
+      v-if="isEnableStartQuiz"
+      :value="true"
+      color="error"
+      icon="warning"
+      outline
+      class="mt-4"
+    >
+      At least ten vocabularies.
+    </v-alert>
   </div>
 </template>
 
 <script>
 export default {
   name: 'quiz-prepare',
+  computed: {
+    isEnableStartQuiz() {
+      return this.$store.state.vocabularies.length >= 10 ? false : true
+    }
+  },
   methods: {
-    startQuiz() {    
+    startQuiz() {
       this.$emit('startQuiz')
     }
   }

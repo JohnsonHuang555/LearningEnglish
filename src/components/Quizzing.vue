@@ -21,14 +21,15 @@
         @click="nextQuestion">
         ANSWER
       </v-btn>
-    </div>    
-    <v-btn
-      v-else
-      large
-      color="primary"
-      @click="answerSubmit">
-      HAND IN
-    </v-btn>
+    </div>
+    <div v-else class="question-content">
+      <v-btn
+        large
+        color="primary"
+        @click="answerSubmit">
+        HAND IN
+      </v-btn>
+    </div> 
   </div>
 </template>
 

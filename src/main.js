@@ -7,10 +7,12 @@ import SnackbarCmp from './components/Shared/Snackbar.vue'
 
 import { initializeApp } from 'firebase'
 import animate from 'animate.css'
+import trend from 'vuetrend'
 
 Vue.config.productionTip = false
 Vue.component('app-snackbar', SnackbarCmp)
 Vue.use(animate)
+Vue.use(trend)
 
 new Vue({
   router,

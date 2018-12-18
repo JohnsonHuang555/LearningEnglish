@@ -9,8 +9,8 @@
       <v-toolbar flat class="secondary">
         <v-list>
           <v-list-tile>
-            <v-list-tile-title class="title">
-              Learning
+            <v-list-tile-title class="app-logo">
+              Learning English
             </v-list-tile-title>
           </v-list-tile>
         </v-list>
@@ -68,9 +68,19 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+@import url("https://fonts.googleapis.com/css?family=Dancing+Script:400,700");
 
 $info: #3F8ED2;
 $accent: #BBB;
+
+.app-logo {
+  font-family: 'Dancing Script', cursive;
+  color: $accent;
+  font-size: 24px;
+  font-weight: 700;
+  display: flex;
+  justify-content: center;
+}
 
 .nav-content {
   position: relative;
