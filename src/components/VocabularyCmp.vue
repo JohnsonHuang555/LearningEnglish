@@ -13,9 +13,6 @@
         </span>
       </v-flex>
       <v-flex xs2 class="words-info quiz">Quiz:&nbsp;{{ vocabulary.quizCount }}</v-flex>
-      <!-- <v-flex xs1 d-flex justify-center>
-        <v-icon>edit</v-icon>
-      </v-flex> -->
       <v-flex xs1 offset-xs1 d-flex justify-center>
         <v-icon @click="deleteWord" color="error">delete</v-icon>
       </v-flex>

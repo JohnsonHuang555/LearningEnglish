@@ -164,6 +164,9 @@ export default {
       this.addCount--
     },
     addVocabulary() {
+      // if (this.$store.getters.loadedVocabularies.length === 10) {
+
+      // }
       let arrAnswer = []
       if (this.addCount === 2) {
         arrAnswer.push(this.answer1)

@@ -18,19 +18,6 @@
           @input="debounceInput"
         ></v-text-field>
       </v-flex>
-      <!-- <v-flex xs1 class="sort">
-        <v-menu offset-y>
-          <v-icon class="sort-icon" slot="activator">sort</v-icon>
-          <v-list>
-            <v-list-tile
-              v-for="(item, index) in sortItems"
-              :key="index"
-            >
-              <v-list-tile-title>{{ item.text }}</v-list-tile-title>
-            </v-list-tile>
-          </v-list>
-        </v-menu>
-      </v-flex> -->
     </v-layout>
     <transition-group name="list-complete" tag="div" class="layout row wrap" style="position: relative;">
       <v-flex xs12 v-for="vocabulary in loadedVocabularies" :key="vocabulary.id" class="list-complete-item">
@@ -70,12 +57,7 @@ export default {
       filterVal: 0,
       searchVal: '',
       myFavoriteWords: [],
-      isSearching: false,      
-      // sortItems: [
-      //   { value: 0, text: 'Date'},
-      //   { value: 1, text: 'A-Z'},
-      // ],
-      // sortVal: 0,
+      isSearching: false,
     }
   },
   watch: {
@@ -99,6 +81,7 @@ export default {
     var ref = database().ref('vocabularies').orderByChild('isFavorite').equalTo(true)
       ref.off()
       ref.on('value', data => {
+        console.log('fjdsifjsooj')
         const vocabularies = []
         const obj = data.val()
           for (let key in obj) {

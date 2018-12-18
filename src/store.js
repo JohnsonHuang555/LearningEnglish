@@ -13,10 +13,11 @@ export default new Vuex.Store({
     loading: false,
     errorMsg: '',
     quizQuestions: [],
-    today: moment("2018-11-26").format("YYYY-MM-DD"),
+    today: moment("2018-12-17").format("YYYY-MM-DD"),
     questionCount: 10, // 總題數
     quizTime: 600, // 考試時間 (秒)
     appLanguage: 0, // 0 En, 1 zh-tw
+    currentDayVocabularies: 0 // 當天所輸入的單字數
   },
   mutations: {
     setLoading(state, payload) {
@@ -58,6 +59,22 @@ export default new Vuex.Store({
       var ref = database().ref('userInfo')
       ref.off()
       ref.on('value', data => {
+        if (data.val() === null) {
+          const userObj = {
+            loginDays : 0,
+            totalQuizzes : 0,
+            totalWords : 0,
+            wrongWordCount : 0
+          }
+          ref.set(userObj)
+            .then(() => {
+              commit('setUserInfo', userObj)
+              commit('setLoading', false)
+            })
+            .catch(error => {
+              console.log(error)
+            })
+        }
         commit('setUserInfo', data.val())
         commit('setLoading', false)
       })        
@@ -71,7 +88,7 @@ export default new Vuex.Store({
         commit('setLoading', false)
       })
     },
-    getVocabularies({commit}) {
+    getVocabularies({state, commit}) {      
       // 預設為當天
       commit('setLoading', true)
       var ref = database().ref('vocabularies')
@@ -86,7 +103,8 @@ export default new Vuex.Store({
             partOfSpeech: obj[key].partOfSpeech,
             answers: obj[key].answers,
             quizCount: obj[key].quizCount,
-            isFavorite: obj[key].isFavorite
+            isFavorite: obj[key].isFavorite,
+            dateTime: state.today,
           })
         }
         commit('setLoading', false)
@@ -103,17 +121,10 @@ export default new Vuex.Store({
         answers: payload.answers,
         quizCount: 0,
         isFavorite: false,
-        dateTime: state.today
+        dateTime: state.today,
       }
       vocabularyRef.push(vocabulary)
-        .then(data => {
-          // 塞入Key值
-          const key = data.key
-          commit('addVocabulary', {
-            ...vocabulary,
-            id: key
-          })
-
+        .then(() => {
           updateWordRef.update({ totalWords:state.userInfo.totalWords + 1 })
             .catch(error => {
               console.log('update word error', error)    
@@ -201,7 +212,18 @@ export default new Vuex.Store({
     },
     saveSettings({commit}, payload) {
       commit('saveSettings', payload)
-    }
+    },
+    // getCurrentDayVocabularies({state}) {
+    //   var ref = database().ref('vocabularies').orderByChild('dateTime').equalTo(state.today)
+    //   ref.once('value')
+    //     .then(data => {
+    //       console.log(data.val())
+    //       // commit('setCurrentDayVocabularies', data.val())
+    //     })
+    //     .catch(error => {
+    //       console.log('get curret day vocabularies erro', error)
+    //     })
+    // }
   },
   getters: {
     loadedVocabularies(state) {
