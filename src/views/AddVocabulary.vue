@@ -93,7 +93,8 @@ export default {
       apiKey: '4ff5d803e06e172e41013c7c4046dc1285cf94b20ceebb66c',
       inputingWord: false,
       hintIcon: '',
-      isShowSnackbar: false
+      isShowSnackbar: false,
+      errorMsg: ''
     }
   },
   watch: {
@@ -113,9 +114,6 @@ export default {
       } else {
         return false
       }
-    },
-    errorMsg() {
-      return this.$store.state.errorMsg
     }
   },
   methods: {
@@ -145,7 +143,7 @@ export default {
                   break
                 default:
                   this.partOfSpeech = res.data[0].partOfSpeech
-                  break;
+                  break
               }
             } else {
               this.hintIcon = 'error_outline'
@@ -164,9 +162,21 @@ export default {
       this.addCount--
     },
     addVocabulary() {
-      // if (this.$store.getters.loadedVocabularies.length === 10) {
+      // const loadedVocabularies = this.$store.getters.loadedVocabularies
+      // let currentWords = loadedVocabularies.filter(item => {
+      //   return item.dateTime === this.today
+      // })
 
-      // }
+      if (this.$store.state.todayVocabularyCount >= 10) {
+        this.errorMsg = '超過10個'
+        this.isShowSnackbar = true
+        setTimeout(() => {
+          this.isShowSnackbar = false
+          this.errorMsg = ''
+        }, 4000)
+        return
+      }
+
       let arrAnswer = []
       if (this.addCount === 2) {
         arrAnswer.push(this.answer1)
@@ -185,6 +195,7 @@ export default {
         partOfSpeech: this.partOfSpeech
       }
       this.$store.dispatch('addVocabulary', data).then(() => {
+        this.$store.dispatch('getCurrentDayVocabularies', this.$store.state.today)
         this.isShowSnackbar = true
         setTimeout(() => {
           this.isShowSnackbar = false

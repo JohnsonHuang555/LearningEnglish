@@ -20,7 +20,11 @@
       </v-flex>
     </v-layout>
     <transition-group name="list-complete" tag="div" class="layout row wrap" style="position: relative;">
-      <v-flex xs12 v-for="vocabulary in loadedVocabularies" :key="vocabulary.id" class="list-complete-item">
+      <v-flex xs12 v-for="(vocabulary, index) in loadedVocabularies" :key="vocabulary.id" class="list-complete-item">
+        <div
+          v-if="dateTimeIndex(vocabulary.dateTime) === index && $store.state.today !== vocabulary.dateTime"
+          class="date-time mb-4"
+          >{{ vocabulary.dateTime }}</div>
         <vocabulary-cmp :vocabulary="vocabulary"/>
       </v-flex>
       <v-flex v-if="loadedVocabularies.length === 0 && !loading" xs12 class="list-complete-item" key="alert">
@@ -40,6 +44,7 @@
 import VocabularyCmp from '@/components/VocabularyCmp.vue'
 import { database } from 'firebase'
 import _ from 'lodash'
+import moment from 'moment'
 
 export default {
   name: 'vocabulary',
@@ -76,12 +81,12 @@ export default {
     }
   },
   mounted() {
-    this.vocabularies = this.$store.getters.loadedVocabularies
+    this.getVocabularies()    
 
+    // 先準備好 myfavorite 單字
     var ref = database().ref('vocabularies').orderByChild('isFavorite').equalTo(true)
       ref.off()
       ref.on('value', data => {
-        console.log('fjdsifjsooj')
         const vocabularies = []
         const obj = data.val()
           for (let key in obj) {
@@ -119,9 +124,28 @@ export default {
     },
     wrongVocabularies() {
       return this.$store.state.wrongVocabularies
-    }
+    },
   },
   methods: {
+    getVocabularies() {
+      // 取得所有單字，規則如下
+      // 當天沒有輸入 顯示前一天
+      // 當天有輸入且有輸滿 顯示當天
+      // 當天有輸入未輸滿 顯示前一天加當天
+      const wordCount = this.$store.state.todayVocabularyCount
+      const limit = this.$store.state.limitedVocabularies
+      const yesterday = moment().add(-1, 'days').format("YYYY-MM-DD")
+      if (this.loadedVocabularies.length > 0) {
+        return
+      }
+
+      if (wordCount > 0 && wordCount === limit) {
+        this.loadedVocabularies = this.$store.getters.loadedVocabularies 
+        return
+      }
+
+      this.$store.dispatch('getCurrentDayVocabularies', yesterday)
+    },
     debounceInput: _.debounce(function(e) {
       if (e) {
         database().ref('vocabularies').orderByChild('word').equalTo(this.searchVal).once('value')
@@ -136,7 +160,8 @@ export default {
                 partOfSpeech: obj[key].partOfSpeech,
                 answers: obj[key].answers,
                 quizCount: obj[key].quizCount,
-                isFavorite: obj[key].isFavorite
+                isFavorite: obj[key].isFavorite,
+                dateTime: obj[key].dateTime
               })
             }
           this.loadedVocabularies = vocabularies
@@ -146,6 +171,13 @@ export default {
         })
       }
     }, 1000),
+    dateTimeIndex(dateTime) {
+      let i = _.findIndex(this.loadedVocabularies, (o) => {
+        return o.dateTime == dateTime
+      })
+
+      return i
+    }
   }
 }
 </script>
@@ -158,6 +190,13 @@ export default {
   .sort-icon {
     cursor: pointer;
   }
+}
+
+.date-time {
+  text-align: center;
+  color: #666;
+  font-size: 18px;
+  letter-spacing: 3px;
 }
 
 i {

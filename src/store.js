@@ -9,15 +9,16 @@ export default new Vuex.Store({
   state: {
     userInfo: null,
     vocabularies: [],
+    todayVocabularyCount: 0, // 當天輸入總和
     wrongVocabularies: [], // 答錯的單字，錯誤清單
     loading: false,
     errorMsg: '',
     quizQuestions: [],
-    today: moment("2018-12-17").format("YYYY-MM-DD"),
+    today: moment().format("YYYY-MM-DD"),
     questionCount: 10, // 總題數
     quizTime: 600, // 考試時間 (秒)
     appLanguage: 0, // 0 En, 1 zh-tw
-    currentDayVocabularies: 0 // 當天所輸入的單字數
+    limitedVocabularies: 10 // 一天可輸入單字數
   },
   mutations: {
     setLoading(state, payload) {
@@ -51,6 +52,9 @@ export default new Vuex.Store({
       state.questionCount = payload.questionCount
       state.quizTime = payload.quizTime
       state.appLanguage = payload.language
+    },
+    setTodayVocabularyCount(state, payload) {
+      state.todayVocabularyCount = payload
     }
   },
   actions: {
@@ -88,28 +92,34 @@ export default new Vuex.Store({
         commit('setLoading', false)
       })
     },
-    getVocabularies({state, commit}) {      
-      // 預設為當天
+    getCurrentDayVocabularies({state, commit}, payload) {
       commit('setLoading', true)
-      var ref = database().ref('vocabularies')
-      ref.off()
-      ref.on('value', data => {
-        const vocabularies = []
-        const obj = data.val()
-        for (let key in obj) {
-          vocabularies.push({
-            id: key,
-            word: obj[key].word,
-            partOfSpeech: obj[key].partOfSpeech,
-            answers: obj[key].answers,
-            quizCount: obj[key].quizCount,
-            isFavorite: obj[key].isFavorite,
-            dateTime: state.today,
-          })
-        }
-        commit('setLoading', false)
-        commit('setVocabularies', vocabularies)
-      })
+      database().ref('vocabularies').orderByChild("dateTime").equalTo(payload).once('value')
+        .then(data => {
+          let vocabularies = []
+          const obj = data.val()
+          for (let key in obj) {
+            vocabularies.push({
+              id: key,
+              word: obj[key].word,
+              partOfSpeech: obj[key].partOfSpeech,
+              answers: obj[key].answers,
+              quizCount: obj[key].quizCount,
+              isFavorite: obj[key].isFavorite,
+              dateTime: obj[key].dateTime,
+            })
+          }
+          if (state.today !== payload) {
+            vocabularies = state.vocabularies.concat(vocabularies)
+          } else {
+            commit('setTodayVocabularyCount', vocabularies.length)
+          }
+          commit('setLoading', false)
+          commit('setVocabularies', vocabularies)
+        })
+        .catch(error => {
+          console.log('getCurrentVocabularies error',error)
+        })
     },
     addVocabulary({state,commit}, payload) {
       commit('setLoading', true)
@@ -129,6 +139,7 @@ export default new Vuex.Store({
             .catch(error => {
               console.log('update word error', error)    
             })
+          commit('setTodayVocabularyCount', state.todayVocabularyCount + 1)
           commit('setLoading', false)
         })
         .catch((error) => {
@@ -191,7 +202,7 @@ export default new Vuex.Store({
     clearQuizQuestions({commit}) {
       commit('clearQuizQuestions')
     },
-    deleteVocabulary({state,commit} ,payload) {
+    deleteVocabulary({state,commit,dispatch} ,payload) {
       commit('setLoading', true)
       var ref = database().ref('vocabularies/' + payload)
       var userInfoRef = database().ref('userInfo')
@@ -203,6 +214,7 @@ export default new Vuex.Store({
             .catch(error => {
               console.log('update word error', error)    
             })
+            dispatch('getCurrentDayVocabularies', state.today)
           console.log('delete successfully')
         })
         .catch(error => {
@@ -213,21 +225,14 @@ export default new Vuex.Store({
     saveSettings({commit}, payload) {
       commit('saveSettings', payload)
     },
-    // getCurrentDayVocabularies({state}) {
-    //   var ref = database().ref('vocabularies').orderByChild('dateTime').equalTo(state.today)
-    //   ref.once('value')
-    //     .then(data => {
-    //       console.log(data.val())
-    //       // commit('setCurrentDayVocabularies', data.val())
-    //     })
-    //     .catch(error => {
-    //       console.log('get curret day vocabularies erro', error)
-    //     })
-    // }
   },
   getters: {
     loadedVocabularies(state) {
-      return state.vocabularies
+      let tempVocabulary = []
+      tempVocabulary = state.vocabularies.slice().sort((itemA, itemB) => {
+        return moment(itemA.dateTime) < moment(itemB.dateTime)
+      })
+      return tempVocabulary
     },
     quizQuestions(state) {
       return state.quizQuestions

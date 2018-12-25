@@ -1,5 +1,5 @@
 <template>
-  <div class="vocabulary mb-4">
+  <div class="vocabulary mb-3">
     <v-layout row class="card-content">
       <v-flex xs1 d-flex justify-center>
         <v-icon v-if="!vocabulary.isFavorite" color="warning">star_border</v-icon>
