@@ -9,7 +9,6 @@
         <router-view/>
       </transition>
     </v-content>
-    <!-- <div class="poweredby">Powered by Johnson Huang</div> -->
   </v-app>
 </template>
 

@@ -8,7 +8,7 @@ import SnackbarCmp from './components/Shared/Snackbar.vue'
 import { initializeApp } from 'firebase'
 import animate from 'animate.css'
 import trend from 'vuetrend'
-import moment from 'moment'
+// import moment from 'moment'
 
 Vue.config.productionTip = false
 Vue.component('app-snackbar', SnackbarCmp)
@@ -28,11 +28,12 @@ new Vue({
       messagingSenderId: "440174769740"
     }),
     // 初始化資料
-    this.$store.dispatch('getUserInfo')
-    this.$store.dispatch('getWrongWords')
+    // this.$store.dispatch('getUserInfo')
+    // this.$store.dispatch('getWrongWords')
+    this.$store.dispatch('testApi')
     // 取當天的單字
-    const today = moment().format("YYYY-MM-DD")
-    this.$store.dispatch('getCurrentDayVocabularies', today)
+    // const today = moment().format("YYYY-MM-DD")
+    // this.$store.dispatch('getCurrentDayVocabularies', today)
   },
   render: h => h(App)
 }).$mount('#app')

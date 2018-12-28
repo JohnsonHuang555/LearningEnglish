@@ -12,10 +12,10 @@
           {{ answer }} <span v-if="index + 1 < vocabulary.answers.length">,</span>
         </span>
       </v-flex>
-      <v-flex xs2 class="words-info quiz">Quiz:&nbsp;{{ vocabulary.quizCount }}</v-flex>
-      <v-flex xs1 offset-xs1 d-flex justify-center>
+      <v-flex xs4 class="words-info quiz">Quiz:&nbsp;{{ vocabulary.quizCount }}</v-flex>
+      <!-- <v-flex xs1 offset-xs1 d-flex justify-center>
         <v-icon @click="deleteWord" color="error">delete</v-icon>
-      </v-flex>
+      </v-flex> -->
     </v-layout>
   </div>
 </template>
@@ -30,9 +30,9 @@ export default {
     }
   },
   methods: {
-    deleteWord() {
-      this.$store.dispatch('deleteVocabulary', this.vocabulary.id)
-    }
+    // deleteWord() {
+    //   this.$store.dispatch('deleteVocabulary', this.vocabulary.id)
+    // }
   }
 }
 </script>
