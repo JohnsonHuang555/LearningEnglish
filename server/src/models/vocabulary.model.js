@@ -1,11 +1,13 @@
 let mongoose = require('mongoose');
 var db = require('../settings/DbSettings');
 
-var Schema = mongoose.Schema;
-
 let VocabularySchema = new mongoose.Schema({
-  Id: Schema.Types.ObjectId,
-  Word: String,
+  word: String,
+  partOfSpeech: String,
+  answers: Array,
+  quizCount: Number,
+  isFavorite: Boolean,
+  dateTime: String
 }, { collection: 'Vocabulary' });
 
-module.exports = db.model("Vocabulary", VocabularySchema);
+module.exports = db.model('Vocabulary', VocabularySchema);
