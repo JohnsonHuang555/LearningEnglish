@@ -18,7 +18,6 @@
       <v-flex xs8>
         <div class="card-radius learning-trend elevation-4">
           <div class="mb-3">Learning Trend</div>
-          <!-- <img class="elevation-4" width="100%" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRdueIeXzSQo5V-QLKcw4rcIbDMw5_rWW89w5bWZ11hWH7pibs3" alt="test"> -->
           <div v-if="isShowTrend">
             <trend              
               :data="trendData"

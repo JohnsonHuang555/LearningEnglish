@@ -195,7 +195,7 @@ export default {
         partOfSpeech: this.partOfSpeech
       }
       this.$store.dispatch('addVocabulary', data).then(() => {
-        this.$store.dispatch('getCurrentDayVocabularies', this.$store.state.today)
+        // this.$store.dispatch('getCurrentDayVocabularies', this.$store.state.today)
         this.isShowSnackbar = true
         setTimeout(() => {
           this.isShowSnackbar = false

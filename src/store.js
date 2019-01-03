@@ -1,8 +1,10 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
-// import { database } from 'firebase'
 import moment from 'moment'
-// import axios from 'axios'
+import _ from 'lodash'
+
+import vocabularyApi from './api/vocabulary'
+import userInfoApi from './api/userInfo'
 
 Vue.use(Vuex)
 
@@ -22,24 +24,27 @@ export default new Vuex.Store({
     limitedVocabularies: 10 // 一天可輸入單字數
   },
   mutations: {
-    // setLoading(state, payload) {
-    //   state.loading = payload
-    // },
+    setLoading(state, payload) {
+      state.loading = payload
+    },
     // setErrorMsg(state, payload) {
     //   state.errorMsg = payload
     // },
-    // setUserInfo(state, payload) {
-    //   state.userInfo = payload
-    // },
+    setUserInfo(state, payload) {
+      state.userInfo = payload
+    },
     // setWrongWords(state, payload) {
     //   state.wrongVocabularies = payload
     // },
-    // setVocabularies(state, payload) {
-    //   state.vocabularies = payload
-    // },
-    // addVocabulary(state, payload) {
-    //   state.vocabularies.push(payload)
-    // },
+    setVocabularies(state, payload) {
+      state.vocabularies = payload
+    },
+    deleteVocabulary(state, payload) {
+      const i = _.findIndex(state.vocabularies, v => {
+        return v._id === payload
+      })
+      state.vocabularies.splice(i, 1)
+    },
     // setQuizQuetions(state, payload) {
     //   state.quizQuestions = payload
     // },
@@ -49,41 +54,61 @@ export default new Vuex.Store({
     // clearQuizQuestions(state) {
     //   state.quizQuestions = []
     // },
-    // saveSettings(state, payload) {
-    //   state.questionCount = payload.questionCount
-    //   state.quizTime = payload.quizTime
-    //   state.appLanguage = payload.language
-    // },
-    // setTodayVocabularyCount(state, payload) {
-    //   state.todayVocabularyCount = payload
-    // }
+    saveSettings(state, payload) {
+      state.questionCount = payload.questionCount
+      state.quizTime = payload.quizTime
+      state.appLanguage = payload.language
+    },
+    setTodayVocabularyCount(state, payload) {
+      state.todayVocabularyCount = payload
+    }
   },
   actions: {
-    // getUserInfo({commit}) {
-    //   commit('setLoading', true)
-    //   var ref = database().ref('userInfo')
-    //   ref.off()
-    //   ref.on('value', data => {
-    //     if (data.val() === null) {
-    //       const userObj = {
-    //         loginDays : 0,
-    //         totalQuizzes : 0,
-    //         totalWords : 0,
-    //         wrongWordCount : 0
-    //       }
-    //       ref.set(userObj)
-    //         .then(() => {
-    //           commit('setUserInfo', userObj)
-    //           commit('setLoading', false)
-    //         })
-    //         .catch(error => {
-    //           console.log(error)
-    //         })
-    //     }
-    //     commit('setUserInfo', data.val())
-    //     commit('setLoading', false)
-    //   })        
-    // },
+    async getVocabularies({ state, commit }, payload) {
+      commit('setLoading', true)
+
+      let data = await vocabularyApi.getVocabularies(payload)
+      if (state.today !== payload) {
+        data = state.vocabularies.concat(data)
+      } else {
+        commit('setTodayVocabularyCount', data.length)
+      }
+
+      commit('setVocabularies', data)
+      commit('setLoading', false)
+    },
+    async getUserInfo({ commit }) {
+      commit('setLoading', true)
+      const data = await userInfoApi.getUserInfo()
+
+      commit('setUserInfo', data)
+      commit('setLoading', false)
+    },
+    async addVocabulary({ state, commit }, payload) {
+      commit('setLoading', true)
+      const vocabulary = {
+        word: payload.word,
+        partOfSpeech: payload.partOfSpeech,
+        answers: payload.answers,
+        quizCount: 0,
+        isFavorite: false,
+        dateTime: state.today,
+      }
+
+      await vocabularyApi.addVocabulary(vocabulary)
+      await userInfoApi.updateTotalWords()
+
+      commit('setTodayVocabularyCount', state.todayVocabularyCount + 1)
+
+      // fatch all
+      const words = await vocabularyApi.getVocabularies(state.today)
+      commit('setVocabularies', words)
+
+      const user = await userInfoApi.getUserInfo()
+      commit('setUserInfo', user)
+
+      commit('setLoading', false)
+    },
     // getWrongWords({commit}) {
     //   commit('setLoading', true)
     //   var ref = database().ref('wrongWords')
@@ -92,62 +117,6 @@ export default new Vuex.Store({
     //     commit('setWrongWords', data.val())
     //     commit('setLoading', false)
     //   })
-    // },
-    // getCurrentDayVocabularies({state, commit}, payload) {
-    //   commit('setLoading', true)
-    //   database().ref('vocabularies').orderByChild("dateTime").equalTo(payload).once('value')
-    //     .then(data => {
-    //       let vocabularies = []
-    //       const obj = data.val()
-    //       for (let key in obj) {
-    //         vocabularies.push({
-    //           id: key,
-    //           word: obj[key].word,
-    //           partOfSpeech: obj[key].partOfSpeech,
-    //           answers: obj[key].answers,
-    //           quizCount: obj[key].quizCount,
-    //           isFavorite: obj[key].isFavorite,
-    //           dateTime: obj[key].dateTime,
-    //         })
-    //       }
-    //       if (state.today !== payload) {
-    //         vocabularies = state.vocabularies.concat(vocabularies)
-    //       } else {
-    //         commit('setTodayVocabularyCount', vocabularies.length)
-    //       }
-    //       commit('setLoading', false)
-    //       commit('setVocabularies', vocabularies)
-    //     })
-    //     .catch(error => {
-    //       console.log('getCurrentVocabularies error',error)
-    //     })
-    // },
-    // addVocabulary({state,commit}, payload) {
-    //   commit('setLoading', true)
-    //   var vocabularyRef = database().ref('vocabularies')
-    //   var updateWordRef = database().ref('userInfo')
-    //   const vocabulary = {
-    //     word: payload.word,
-    //     partOfSpeech: payload.partOfSpeech,
-    //     answers: payload.answers,
-    //     quizCount: 0,
-    //     isFavorite: false,
-    //     dateTime: state.today,
-    //   }
-    //   vocabularyRef.push(vocabulary)
-    //     .then(() => {
-    //       updateWordRef.update({ totalWords:state.userInfo.totalWords + 1 })
-    //         .catch(error => {
-    //           console.log('update word error', error)    
-    //         })
-    //       commit('setTodayVocabularyCount', state.todayVocabularyCount + 1)
-    //       commit('setLoading', false)
-    //     })
-    //     .catch((error) => {
-    //       commit('setErrorMsg', 'Add fail!')
-    //       commit('setLoading', false)
-    //       console.log('add vocabulary error', error)
-    //     })
     // },
     // getQuizQuestions({state, commit}) {
     //   commit('setLoading', true)
@@ -203,39 +172,34 @@ export default new Vuex.Store({
     // clearQuizQuestions({commit}) {
     //   commit('clearQuizQuestions')
     // },
-    // deleteVocabulary({state,commit,dispatch} ,payload) {
-    //   commit('setLoading', true)
-    //   var ref = database().ref('vocabularies/' + payload)
-    //   var userInfoRef = database().ref('userInfo')
+    async deleteVocabulary({ commit } ,payload) {
+      commit('setLoading', true)
+      await vocabularyApi.deleteVocabulary(payload)
 
-    //   ref.remove()
-    //     .then(() => {
-    //       commit('setLoading', false)
-    //       userInfoRef.update({ totalWords:state.userInfo.totalWords - 1 })
-    //         .catch(error => {
-    //           console.log('update word error', error)    
-    //         })
-    //         dispatch('getCurrentDayVocabularies', state.today)
-    //       console.log('delete successfully')
-    //     })
-    //     .catch(error => {
-    //       commit('setLoading', false)
-    //       console.log('delete fail', error)
-    //     })
-    // },
-    // saveSettings({commit}, payload) {
-    //   commit('saveSettings', payload)
-    // },
-    // testApi() {
-    //   const instance = axios.create({
-    //     json: true
-    //   })
-  
-    //   instance.get("http://localhost:5000/api/vocabulary")
-    //   .then(res => {
-    //     console.log(res)
-    //   })
-    // }
+      commit('deleteVocabulary', payload)
+      commit('setLoading', false)
+      // commit('setLoading', true)
+      // var ref = database().ref('vocabularies/' + payload)
+      // var userInfoRef = database().ref('userInfo')
+
+      // ref.remove()
+      //   .then(() => {
+      //     commit('setLoading', false)
+      //     userInfoRef.update({ totalWords:state.userInfo.totalWords - 1 })
+      //       .catch(error => {
+      //         console.log('update word error', error)    
+      //       })
+      //       dispatch('getCurrentDayVocabularies', state.today)
+      //     console.log('delete successfully')
+      //   })
+      //   .catch(error => {
+      //     commit('setLoading', false)
+      //     console.log('delete fail', error)
+      //   })
+    },
+    saveSettings({commit}, payload) {
+      commit('saveSettings', payload)
+    }
   },
   getters: {
     loadedVocabularies(state) {

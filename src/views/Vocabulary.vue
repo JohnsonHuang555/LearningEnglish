@@ -20,12 +20,12 @@
       </v-flex>
     </v-layout>
     <transition-group name="list-complete" tag="div" class="layout row wrap" style="position: relative;">
-      <v-flex xs12 v-for="(vocabulary, index) in loadedVocabularies" :key="vocabulary.id" class="list-complete-item">
+      <v-flex xs12 v-for="(vocabulary, index) in loadedVocabularies" :key="vocabulary._id" class="list-complete-item">
         <div
           v-if="dateTimeIndex(vocabulary.dateTime) === index && $store.state.today !== vocabulary.dateTime"
           class="date-time mb-4"
           >{{ vocabulary.dateTime }}</div>
-        <vocabulary-cmp :vocabulary="vocabulary"/>
+        <vocabulary-cmp :vocabulary="vocabulary" :today="today"/>
       </v-flex>
       <v-flex v-if="loadedVocabularies.length === 0 && !loading" xs12 class="list-complete-item" key="alert">
         <v-alert
@@ -42,9 +42,9 @@
 
 <script>
 import VocabularyCmp from '@/components/VocabularyCmp.vue'
-import { database } from 'firebase'
 import _ from 'lodash'
 import moment from 'moment'
+import vocabularyApi from '@/api/vocabulary.js'
 
 export default {
   name: 'vocabulary',
@@ -63,6 +63,7 @@ export default {
       searchVal: '',
       myFavoriteWords: [],
       isSearching: false,
+      today: moment().format('YYYY-MM-DD')
     }
   },
   watch: {
@@ -81,26 +82,10 @@ export default {
     }
   },
   mounted() {
-    this.getVocabularies()    
+    this.getVocabularies()
 
     // 先準備好 myfavorite 單字
-    var ref = database().ref('vocabularies').orderByChild('isFavorite').equalTo(true)
-      ref.off()
-      ref.on('value', data => {
-        const vocabularies = []
-        const obj = data.val()
-          for (let key in obj) {
-            vocabularies.push({
-              id: key,
-              word: obj[key].word,
-              partOfSpeech: obj[key].partOfSpeech,
-              answers: obj[key].answers,
-              quizCount: obj[key].quizCount,
-              isFavorite: obj[key].isFavorite
-            })
-          }
-        this.myFavoriteWords = vocabularies
-      })
+    this.getFavoriteWords()
   },
   computed: {
     loading() {
@@ -140,35 +125,15 @@ export default {
       }
 
       if (wordCount > 0 && wordCount === limit) {
-        this.loadedVocabularies = this.$store.getters.loadedVocabularies 
+        this.loadedVocabularies = this.$store.getters.loadedVocabularies
         return
       }
 
-      this.$store.dispatch('getCurrentDayVocabularies', yesterday)
+      this.$store.dispatch('getVocabularies', yesterday)
     },
     debounceInput: _.debounce(function(e) {
       if (e) {
-        database().ref('vocabularies').orderByChild('word').equalTo(this.searchVal).once('value')
-        .then(data => {
-          this.isSearching = false
-          const vocabularies = []
-          const obj = data.val()
-            for (let key in obj) {
-              vocabularies.push({
-                id: key,
-                word: obj[key].word,
-                partOfSpeech: obj[key].partOfSpeech,
-                answers: obj[key].answers,
-                quizCount: obj[key].quizCount,
-                isFavorite: obj[key].isFavorite,
-                dateTime: obj[key].dateTime
-              })
-            }
-          this.loadedVocabularies = vocabularies
-        })
-        .catch(error => {
-          console.log('search error', error)
-        })
+        this.filterWords()
       }
     }, 1000),
     dateTimeIndex(dateTime) {
@@ -177,6 +142,15 @@ export default {
       })
 
       return i
+    },
+    async getFavoriteWords() {
+      const data = await vocabularyApi.getFavoriteWords()
+      this.myFavoriteWords = data
+    },
+    async filterWords() {
+      const data = await vocabularyApi.filterWords(this.searchVal)
+      this.loadedVocabularies = data
+      this.isSearching = false
     }
   }
 }

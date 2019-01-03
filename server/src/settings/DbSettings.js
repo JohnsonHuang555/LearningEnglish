@@ -6,6 +6,7 @@ const database = 'LearningAppDB';
 // const password = '';
 
 mongoose.connect(`mongodb://127.0.0.1/${database}`, { useNewUrlParser: true });
+mongoose.set('useFindAndModify', false);
 
 mongoose.Promise = global.Promise;
 var db = mongoose.connection;
