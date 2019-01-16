@@ -1,7 +1,10 @@
-let VocabularyModel = require('../models/vocabulary.model');
-let UserInfoModel = require('../models/userInfo.model');
-let express = require('express');
-let router = express.Router();
+const VocabularyModel = require('../models/vocabulary.model');
+const UserInfoModel = require('../models/userInfo.model');
+const express = require('express');
+const router = express.Router();
+const moment = require('moment');
+
+const today = moment().format("YYYY-MM-DD");
 
 router.get('/getVocabularies/:date', (req, res) => {
   if(!req.body) {
@@ -50,12 +53,25 @@ router.get('/getUserInfo', (req, res) => {
     });
 })
 
-router.put('/updateTotalWords', (req, res) => {
+router.put('/addTotalWords', (req, res) => {
   if(!req.body) {
     return res.status(400).send('Request body is missing');
   }
 
   UserInfoModel.findOneAndUpdate({ _id: '5c2d6edaad96a11da0983f03'}, {"$inc" : { "totalWords" : 1 }})
+    .then(() => {
+      res.send("success");
+    })
+    .catch(err => {
+      res.status(500).json(err);
+    });
+})
+
+router.put('/minusTotalWords', (req, res) => {
+  if(!req.body) {
+    return res.status(400).send('Request body is missing');
+  }
+  UserInfoModel.findOneAndUpdate({ _id: '5c2d6edaad96a11da0983f03'}, {"$inc" : { "totalWords" : -1 }})
     .then(() => {
       res.send("success");
     })
@@ -82,7 +98,7 @@ router.delete('/deleteVocabulary/:id', (req, res) => {
   if(!req.body) {
     return res.status(400).send('Request body is missing');
   }
-  console.log(req.params.id)
+  
   VocabularyModel.findByIdAndRemove({ _id: req.params.id })
     .then(() => {
       res.send("success");
@@ -91,4 +107,44 @@ router.delete('/deleteVocabulary/:id', (req, res) => {
       res.status(500).json(err);
     });
 })
+
+router.get('/getWrongWords', (req, res) => {
+  if(!req.body) {
+    return res.status(400).send('Request body is missing');
+  }
+
+  VocabularyModel.find({ isWrong: true })
+    .then(doc => {
+      res.json(doc);
+    })
+    .catch(err => {
+      res.status(500).json(err);
+    });
+})
+
+// mode 1
+router.get('/getQuizQuestions/:mode', (req, res) => {
+  if(!req.body) {
+    return res.status(400).send('Request body is missing');
+  }
+  
+  let quizWords = []
+  VocabularyModel.find({ dateTime: today })
+    .then(q1 => {
+      const temp = q1
+      VocabularyModel.aggregate([
+        { $match : { dateTime : {$ne: today} } },
+        { $sample: {size: 5}}
+      ]).then(q2 => {
+        quizWords = temp.concat(q2)
+        res.json(quizWords)
+      }).catch(err => {
+        res.status(500).json(err);
+      })
+    })
+    .catch(err => {
+      res.status(500).json(err);
+    })  
+})
+
 module.exports = router;

@@ -2,9 +2,9 @@
   <div>
     <div v-if="!isShowSubmit" class="question-content">
       <div class="question-title mb-4">Question</div>
-      <h1 class="mb-4">
+      <h1 class="mb-4" v-if="quizQuestions.length">
         <span
-          v-for="question in quizQuestions[questionNumber - 1].questions"
+          v-for="question in quizQuestions[questionNumber - 1].answers"
           :key="question.id">
             {{ question }}
         </span>
@@ -62,7 +62,7 @@ export default {
       var objQuestion = this.quizQuestions[this.questionNumber - 1]
       this.answerSheet.push({
         ...objQuestion,
-        isCorrect: this.quizQuestions[this.questionNumber - 1].answer === this.answer ? true : false
+        isCorrect: this.quizQuestions[this.questionNumber - 1].word === this.answer ? true : false
       })
 
       if (this.questionNumber !== this.$store.state.questionCount) {

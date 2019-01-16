@@ -68,7 +68,7 @@ export default {
   data() {
     return {
       questionItems: [
-        { text: '10', value: 10 },
+        { text: '15', value: 15 },
         { text: '20', value: 20 },
         { text: '30', value: 30 },
       ],
@@ -81,7 +81,7 @@ export default {
         { text: 'English', value: 0 },
         { text: 'Traditional Chinese', value: 1 },
       ],
-      questionCount: 10,
+      questionCount: 15,
       quizTime: 10,
       language: 0,
       isShowSnackbar: false

@@ -1,7 +1,7 @@
 <template>
   <div class="question-content">
     <p class="mb-5">
-      <v-icon large color="secondary">info</v-icon>
+      <v-icon large color="secondary" class="mr-2">info</v-icon>
       Are you ready for quiz ?
     </p>
     <v-btn large color="primary" :disabled="isEnableStartQuiz" @click="startQuiz">START</v-btn>
@@ -48,6 +48,7 @@ export default {
 p {
   font-size: 28px;
   max-width: 400px;
+  display: flex;
 }
 
 </style>

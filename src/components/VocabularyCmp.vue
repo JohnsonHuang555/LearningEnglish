@@ -27,10 +27,11 @@ export default {
     vocabulary: {
       type: Object,
       required: true
-    },
-    today: {
-      type: String,
-      required: true
+    }
+  },
+  computed: {
+    today() {
+      return this.$store.state.today
     }
   },
   methods: {

@@ -4,7 +4,10 @@ export default {
   getUserInfo() {
     return api.execute('get', '/getUserInfo')
   },
-  updateTotalWords() {
-    return api.execute('put', '/updateTotalWords')
+  addTotalWords() {
+    return api.execute('put', '/addTotalWords')
+  },
+  minusTotalWords() {
+    return api.execute('put', '/minusTotalWords')
   }
 }

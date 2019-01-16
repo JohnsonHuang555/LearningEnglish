@@ -1,5 +1,5 @@
 <template>
-  <div >
+  <div class="quiz-detail">
     <vocabulary-cmp
       v-for="vocabulary in quizResult"
       :key="vocabulary.id"

@@ -16,4 +16,10 @@ export default {
   filterWords(word) {
     return api.execute('get', `/filterWords/${word}`)
   },
+  getWrongWords() {
+    return api.execute('get', '/getWrongWords')
+  },
+  getQuizQuestions(mode) {
+    return api.execute('get', `/getQuizQuestions/${mode}`)
+  }
 }
