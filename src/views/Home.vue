@@ -56,8 +56,6 @@
 import moment from 'moment'
 
 export default {
-  components: {
-  },
   name: 'home',
   data() {
     return {
@@ -88,6 +86,12 @@ export default {
         this.isShowTrend = true
         this.trendData = this.rate1
       }, 1000)
+    },
+    userInfo() {
+      const logDays = this.userInfo.loginLog.length
+      if (this.userInfo.loginLog[logDays - 1] !== this.$store.state.today) {
+        console.log('change')
+      }
     }
   },
   methods: {

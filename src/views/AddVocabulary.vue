@@ -68,7 +68,7 @@
       <v-flex offset-xs1 xs4>
         <h3>Hint</h3>
         <p class="mb-5">Lorem ipsum dolor sit amet, consectetur  elit, sed do eiusmod tempor incididunt. Ldefss amess ai klott steds hello world.</p>
-        <div class="limit-alert">
+        <div class="limit-alert" v-if="$store.state.todayVocabularyCount === $store.state.limitedVocabularies">
           <v-icon class="mr-2" color="error">warning</v-icon>
           <h3>10 words are the limits</h3>
         </div>

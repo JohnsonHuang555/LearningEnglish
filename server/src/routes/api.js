@@ -122,6 +122,20 @@ router.get('/getWrongWords', (req, res) => {
     });
 })
 
+router.get('/filterWords/:word', (req, res) => {
+  if(!req.body) {
+    return res.status(400).send('Request body is missing');
+  }
+
+  VocabularyModel.find({ word: req.params.word })
+    .then(doc => {
+      res.json(doc);
+    })
+    .catch(err => {
+      res.status(500).json(err);
+    });
+})
+
 // mode 1
 router.get('/getQuizQuestions/:mode', (req, res) => {
   if(!req.body) {
@@ -147,4 +161,20 @@ router.get('/getQuizQuestions/:mode', (req, res) => {
     })  
 })
 
+router.get('/setLogInfo', (req, res) => {
+  if(!req.body) {
+    return res.status(400).send('Request body is missing');
+  }
+  // console.log(today.to);
+  UserInfoModel.findOneAndUpdate(
+      { _id: '5c2d6edaad96a11da0983f03' },
+      { loginLog: ["2019-01-15", "2019-01-17"] },
+    )
+    .then((doc) => {
+      res.json(doc);
+    })
+    .catch(err => {
+      res.status(500).json(err);
+    });
+})
 module.exports = router;

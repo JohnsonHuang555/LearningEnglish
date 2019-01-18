@@ -94,7 +94,7 @@ export default {
   },
   methods: {
     reset() {
-      this.questionCount = 10,
+      this.questionCount = 15,
       this.quizTime = 10,
       this.language = 0
     },

@@ -13,7 +13,8 @@ export default new Vuex.Store({
       loginDays: 0,
       totalWords: 0,
       totalQuizzes: 0,
-      wrongWordCound: 0
+      wrongWordCount: 0,
+      loginLog: []
     },
     vocabularies: [],
     todayVocabularyCount: 0, // 當天輸入總和
@@ -64,47 +65,37 @@ export default new Vuex.Store({
       state,
       commit
     }) {
-      commit('setLoading', true)
       let data = []
       // 取得所有單字，規則如下
-      // 當天沒有輸入 顯示前一天
+      // 當天沒有輸入，顯示最後登入的那一天
       // 當天有輸入且有輸滿 顯示當天
-      // 當天有輸入未輸滿 顯示前一天加當天
+      // 當天有輸入未輸滿 顯示最後登入的那一天加當天
       const limit = state.limitedVocabularies
-      const yesterday = moment().add(-1, 'days').format("YYYY-MM-DD")
-      const yesterdayData = await vocabularyApi.getVocabularies(yesterday)
+      const logDays = state.userInfo.loginLog.length
+      const previousDay = state.userInfo.loginLog[logDays - 1]
+      const previousDayData = await vocabularyApi.getVocabularies(previousDay)
       const todayData = await vocabularyApi.getVocabularies(state.today)
       if (todayData.length === state.questionCount) {
         commit('setQuizQuetions', todayData)
       }
-      // TODO: if yesterdayData is null
 
       if (todayData.length === 0) {
-        data = await vocabularyApi.getVocabularies(yesterday)
+        data = await vocabularyApi.getVocabularies(previousDay)
       } else if (todayData.length > 0 && todayData.length === limit) {
         data = await vocabularyApi.getVocabularies(state.today)
       } else if (todayData.length > 0 && todayData.length < limit) {
-        data = yesterdayData.concat(todayData)
+        data = previousDayData.concat(todayData)
       }
       
       commit('setTodayVocabularyCount', todayData.length)
-
-      // 更新 Dashboard
-      const user = await userInfoApi.getUserInfo()
-      commit('setUserInfo', user)
       commit('setVocabularies', data)
-      commit('setLoading', false)
     },
-    async getUserInfo({
-      commit
-    }) {
+    async getUserInfo({ commit, dispatch }) {
       const data = await userInfoApi.getUserInfo()
       commit('setUserInfo', data)
+      dispatch('getVocabularies')
     },
-    async addVocabulary({
-      state,
-      dispatch,
-    }, payload) {
+    async addVocabulary({ state, dispatch }, payload) {
       const vocabulary = {
         word: payload.word,
         partOfSpeech: payload.partOfSpeech,

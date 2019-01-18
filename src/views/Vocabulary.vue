@@ -15,6 +15,14 @@
         ></v-text-field>
       </v-flex>
     </v-layout>
+    <!-- <v-progress-circular
+      v-if="loading"
+      indeterminate
+      color="secondary"
+      :size="50"
+      :width="5"
+      class="progress-circle mb-4"
+    ></v-progress-circular> -->
     <transition-group
       name="list-complete"
       tag="div"
@@ -37,7 +45,7 @@
         <vocabulary-cmp :vocabulary="vocabulary"/>
       </v-flex>
       <v-flex
-        v-if="loadedVocabularies.length === 0 && !loading"
+        v-if="loadedVocabularies.length === 0"
         xs12
         class="list-complete-item"
         key="alert"
@@ -50,8 +58,8 @@
 
 <script>
 import VocabularyCmp from "@/components/VocabularyCmp.vue";
-import _ from "lodash";
 import vocabularyApi from "@/api/vocabulary.js";
+import _ from "lodash";
 
 export default {
   name: "vocabulary",
@@ -94,9 +102,6 @@ export default {
     this.getFavoriteWords();
   },
   computed: {
-    loading() {
-      return this.$store.state.loading;
-    },
     loadedVocabularies: {
       get() {
         if (this.filterVal === 2) {
@@ -147,6 +152,11 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.progress-circle {
+  transform: translateX(-50%);
+  left: 50%;
+}
+
 .sort {
   display: flex;
   align-items: center;

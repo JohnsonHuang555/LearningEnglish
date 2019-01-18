@@ -18,8 +18,7 @@ new Vue({
   store,
   created() {
     // 初始化資料
-    // this.$store.dispatch('getWrongWords')
-    this.$store.dispatch('getVocabularies')
+    this.$store.dispatch('getWrongWords')
     this.$store.dispatch('getUserInfo')
   },
   render: h => h(App)
