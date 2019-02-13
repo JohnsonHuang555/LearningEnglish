@@ -88,6 +88,7 @@ $accent: #BBB;
 }
 
 .route-basic {
+  border: 5px solid transparent;
   color: $accent;
 }
 

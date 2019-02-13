@@ -46,7 +46,24 @@ router.get('/getUserInfo', (req, res) => {
 
   UserInfoModel.findOne()
     .then(doc => {
-      res.json(doc);
+      const obj = JSON.parse(JSON.stringify(doc));
+      if (obj.loginLog.indexOf(today) > 0) {
+        res.json(doc);
+      } else {
+        obj.loginLog.push(today)
+        UserInfoModel.findOneAndUpdate(
+          { _id: '5c6190a8d4d190b5f0eaf62e' },
+          { "$inc" : { "loginDays" : 1 }}
+        )
+        .then((doc) => {
+          console.log(doc, 'ddddd');
+          
+          res.json(doc);
+        })
+        .catch(err => {
+          res.status(500).json(err);
+        });
+      }
     })
     .catch(err => {
       res.status(500).json(err);
@@ -58,7 +75,7 @@ router.put('/addTotalWords', (req, res) => {
     return res.status(400).send('Request body is missing');
   }
 
-  UserInfoModel.findOneAndUpdate({ _id: '5c2d6edaad96a11da0983f03'}, {"$inc" : { "totalWords" : 1 }})
+  UserInfoModel.findOneAndUpdate({ _id: '5c6190a8d4d190b5f0eaf62e'}, {"$inc" : { "totalWords" : 1 }})
     .then(() => {
       res.send("success");
     })
@@ -71,7 +88,7 @@ router.put('/minusTotalWords', (req, res) => {
   if(!req.body) {
     return res.status(400).send('Request body is missing');
   }
-  UserInfoModel.findOneAndUpdate({ _id: '5c2d6edaad96a11da0983f03'}, {"$inc" : { "totalWords" : -1 }})
+  UserInfoModel.findOneAndUpdate({ _id: '5c6190a8d4d190b5f0eaf62e'}, {"$inc" : { "totalWords" : -1 }})
     .then(() => {
       res.send("success");
     })
@@ -167,8 +184,8 @@ router.get('/setLogInfo', (req, res) => {
   }
   // console.log(today.to);
   UserInfoModel.findOneAndUpdate(
-      { _id: '5c2d6edaad96a11da0983f03' },
-      { loginLog: ["2019-01-15", "2019-01-17"] },
+      { _id: '5c6190a8d4d190b5f0eaf62e' },
+      { "$inc": { "loginDays": 1 }}
     )
     .then((doc) => {
       res.json(doc);

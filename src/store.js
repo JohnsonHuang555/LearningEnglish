@@ -86,7 +86,7 @@ export default new Vuex.Store({
       } else if (todayData.length > 0 && todayData.length < limit) {
         data = previousDayData.concat(todayData)
       }
-      
+
       commit('setTodayVocabularyCount', todayData.length)
       commit('setVocabularies', data)
     },
@@ -109,7 +109,7 @@ export default new Vuex.Store({
       await userInfoApi.addTotalWords()
 
       // update
-      dispatch('getVocabularies')
+      dispatch('getUserInfo')
     },
     async getWrongWords({ commit }) {
       const data = await vocabularyApi.getWrongWords()
@@ -151,7 +151,7 @@ export default new Vuex.Store({
       await userInfoApi.minusTotalWords()
       
       // update
-      dispatch('getVocabularies')
+      dispatch('getUserInfo')
     },
     saveSettings({
       commit
