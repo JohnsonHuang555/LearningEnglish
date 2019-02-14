@@ -17,11 +17,11 @@ export default new Vuex.Store({
       loginLog: []
     },
     vocabularies: [],
+    myFavoriteWords: [],
     todayVocabularyCount: 0, // 當天輸入總和
     limitedVocabularies: 10, // 一天可輸入單字數
     wrongVocabularies: [], // 答錯的單字，錯誤清單
     loading: false,
-    errorMsg: '',
     quizQuestions: [],
     today: moment().format("YYYY-MM-DD"),
     questionCount: 15, // 總題數 五題為錯誤清單 + 之前的單字
@@ -48,6 +48,9 @@ export default new Vuex.Store({
     setQuizResult(state, payload) {
       state.wrongVocabularies = payload
     },
+    setFavoriteWords(state, payload) {
+      state.myFavoriteWords = payload
+    },
     clearQuizQuestions(state) {
       state.quizQuestions = []
     },
@@ -61,18 +64,20 @@ export default new Vuex.Store({
     }
   },
   actions: {
-    async getVocabularies({
-      state,
-      commit
-    }) {
+    async getVocabularies({ state, commit }, payload) {
+      if (payload === undefined) {
+        return
+      }
+
       let data = []
       // 取得所有單字，規則如下
       // 當天沒有輸入，顯示最後登入的那一天
       // 當天有輸入且有輸滿 顯示當天
       // 當天有輸入未輸滿 顯示最後登入的那一天加當天
       const limit = state.limitedVocabularies
-      const logDays = state.userInfo.loginLog.length
-      const previousDay = state.userInfo.loginLog[logDays - 1]
+      const logDays = payload.loginLog.length
+      
+      const previousDay = payload.loginLog[logDays - 2]
       const previousDayData = await vocabularyApi.getVocabularies(previousDay)
       const todayData = await vocabularyApi.getVocabularies(state.today)
       if (todayData.length === state.questionCount) {
@@ -86,30 +91,14 @@ export default new Vuex.Store({
       } else if (todayData.length > 0 && todayData.length < limit) {
         data = previousDayData.concat(todayData)
       }
-
       commit('setTodayVocabularyCount', todayData.length)
       commit('setVocabularies', data)
     },
     async getUserInfo({ commit, dispatch }) {
-      const data = await userInfoApi.getUserInfo()
-      commit('setUserInfo', data)
-      dispatch('getVocabularies')
-    },
-    async addVocabulary({ state, dispatch }, payload) {
-      const vocabulary = {
-        word: payload.word,
-        partOfSpeech: payload.partOfSpeech,
-        answers: payload.answers,
-        quizCount: 0,
-        isFavorite: false,
-        dateTime: state.today,
-      }
-
-      await vocabularyApi.addVocabulary(vocabulary)
-      await userInfoApi.addTotalWords()
-
-      // update
-      dispatch('getUserInfo')
+      await userInfoApi.getUserInfo().then(data => {
+        commit('setUserInfo', data)
+        dispatch('getVocabularies', data)
+      })      
     },
     async getWrongWords({ commit }) {
       const data = await vocabularyApi.getWrongWords()
@@ -119,34 +108,25 @@ export default new Vuex.Store({
       const data = await vocabularyApi.getQuizQuestions(state.mode)
       commit('setQuizQuestions', data)
     },
-    // setQuizResult({state,commit}, payload) {
-    //   commit('setLoading', true)
-    //   var updateRef = database().ref('userInfo')
-    //   var createRef = database().ref('wrongWords')
-    //   updateRef.update({
-    //     wrongWordCount: state.userInfo.totalQuizzes + payload.length,
-    //     totalQuizzes: state.userInfo.totalQuizzes + 1
-    //   })
-    //   .then(() => {
-    //     commit('setQuizResult', payload)
-    //     commit('setLoading', false)
-    //   })
-    //   .catch(error => {
-    //     console.log(error)
-    //     commit('setLoading', false)
-    //   })
-
-    //   createRef.set(payload)
-    //   .catch(error => {
-    //     console.log('create wrong words error', error)
-    //   })
-    // },
+    async getFavoriteWords({ commit }) {
+      const data = await vocabularyApi.getFavoriteWords()
+      commit('setFavoriteWords', data)
+    },
+    async setQuizResult({ commit }, payload) {
+      const data = await vocabularyApi.setQuizResult(payload)
+      commit('setQuizResult', data)
+    },
     clearQuizQuestions({commit}) {
       commit('clearQuizQuestions')
     },
-    async deleteVocabulary({
-      dispatch
-    }, payload) {
+    async setFavoriteVocabulary({ dispatch }, payload) {
+      await vocabularyApi.setFavoriteVocabulary(payload)
+      dispatch('getFavoriteWords')
+
+      // update
+      dispatch('getUserInfo')
+    },
+    async deleteVocabulary({ dispatch }, payload) {
       await vocabularyApi.deleteVocabulary(payload)
       await userInfoApi.minusTotalWords()
       
@@ -166,6 +146,9 @@ export default new Vuex.Store({
         return moment(itemA.dateTime) > moment(itemB.dateTime)
       })
       return tempVocabulary.reverse()
+    },
+    errorMsg(state) {
+      return state.errorMsg
     },
     quizQuestions(state) {
       return state.quizQuestions

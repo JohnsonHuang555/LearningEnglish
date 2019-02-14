@@ -76,7 +76,6 @@ export default {
       ],
       filterVal: 0,
       searchVal: "",
-      myFavoriteWords: [],
       isSearching: false
     };
   },
@@ -102,6 +101,14 @@ export default {
     this.getFavoriteWords();
   },
   computed: {
+    myFavoriteWords: {
+      get() {
+        return this.$store.state.myFavoriteWords
+      },
+      set() {
+
+      }
+    },
     loadedVocabularies: {
       get() {
         if (this.filterVal === 2) {

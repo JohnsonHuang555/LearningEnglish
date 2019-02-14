@@ -7,6 +7,7 @@
       <v-flex xs5>
         <div class="btn-group">
           <v-text-field
+            ref="word"
             class="text-input mb-4"
             placeholder="New word"
             v-model="newVocabulary"
@@ -25,6 +26,7 @@
           <v-text-field
             class="text-input"
             placeholder="Your answer"
+            @keyup.enter.native="addVocabulary"
             v-model="answer1"
           ></v-text-field>
           <v-btn v-if="addCount < 2" class="btn-add" flat icon color="accent" @click="addMoreAnswer">
@@ -36,6 +38,7 @@
             v-if="addCount >= 1"
             class="text-input"
             placeholder="Your answer"
+            @keyup.enter.native="addVocabulary"
             v-model="answer2"
           ></v-text-field>
           <v-btn v-if="addCount >= 1" class="btn-add" flat icon color="error" @click="removeAnswer">
@@ -47,7 +50,7 @@
             v-if="addCount === 2"
             class="text-input mb-4"
             placeholder="Your answer"
-            @keyup.native.enter="addVocabulary"
+            @keyup.enter.native="addVocabulary"
             v-model="answer3"
           ></v-text-field>
           <v-btn v-if="addCount === 2" class="btn-add" flat icon color="error" @click="removeAnswer">
@@ -85,6 +88,7 @@
 <script>
 import axios from 'axios'
 import _ from 'lodash'
+import vocabularyApi from '../api/vocabulary.js'
 
 export default {
   name: 'add-vocabulary',
@@ -120,6 +124,9 @@ export default {
       } else {
         return false
       }
+    },
+    today() {
+      return this.$store.state.today
     }
   },
   methods: {
@@ -194,15 +201,32 @@ export default {
       const data = {
         word: this.newVocabulary.toLowerCase(),
         answers: arrAnswer,
-        partOfSpeech: this.partOfSpeech
+        partOfSpeech: this.partOfSpeech,
+        quizCount: 0,
+        isFavorite: false,
+        dateTime: this.today,
+        isWrong: false
       }
-      this.$store.dispatch('addVocabulary', data).then(() => {
-        this.isShowSnackbar = true
-        setTimeout(() => {
-          this.isShowSnackbar = false
-        }, 4000)
-      })
 
+      vocabularyApi.addVocabulary(data)
+        .then(res => {
+          this.isShowSnackbar = true
+          if (!res.status) {
+            this.errorMsg = res.msg
+          }
+
+          setTimeout(() => {
+            this.isShowSnackbar = false
+            this.errorMsg = ''
+          }, 4000)
+
+          this.$store.dispatch('getUserInfo')
+        })
+        .catch(err => {
+          console.log(err)
+        })
+
+      this.$refs.word.focus()
       this.clearAll()
       
     },

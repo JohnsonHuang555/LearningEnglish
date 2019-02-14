@@ -20,6 +20,7 @@ new Vue({
     // 初始化資料
     this.$store.dispatch('getWrongWords')
     this.$store.dispatch('getUserInfo')
+    this.$store.dispatch('getFavoriteWords')
   },
   render: h => h(App)
 }).$mount('#app')

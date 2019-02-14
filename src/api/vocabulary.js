@@ -21,5 +21,11 @@ export default {
   },
   getQuizQuestions(mode) {
     return api.execute('get', `/getQuizQuestions/${mode}`)
+  },
+  setFavoriteVocabulary(id) {
+    return api.execute('put', `/setFavoriteVocabulary/${id}`)
+  },
+  setQuizResult(data) {
+    return api.execute('post', `/setQuizResult`, data)
   }
 }

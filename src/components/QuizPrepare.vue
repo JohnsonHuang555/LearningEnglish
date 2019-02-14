@@ -23,7 +23,7 @@ export default {
   name: 'quiz-prepare',
   computed: {
     isEnableStartQuiz() {
-      return this.$store.state.vocabularies.length >= 10 ? false : true
+      return this.$store.state.todayVocabularyCount < 10 ? true : false
     }
   },
   methods: {

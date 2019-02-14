@@ -5,7 +5,8 @@ let UserInfoSchema = new mongoose.Schema({
   loginDays: Number,
   totalWords: Number,
   totalQuizzes: Number,
-  wrongWordCount: Number
+  wrongWordCount: Number,
+  loginLog: Array
 }, { collection: 'User' });
 
 module.exports = db.model('User', UserInfoSchema);

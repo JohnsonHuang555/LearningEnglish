@@ -4,6 +4,7 @@
       v-for="vocabulary in quizResult"
       :key="vocabulary.id"
       :class="{ 'incorrect-question':!vocabulary.isCorrect, 'correct-question': vocabulary.isCorrect}"
+      class="mb-4"
       :vocabulary="vocabulary"/>
   </div>
 </template>

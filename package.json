@@ -13,7 +13,6 @@
   "dependencies": {
     "animate.css": "^3.7.0",
     "axios": "^0.18.0",
-    "firebase": "^5.5.7",
     "gsap": "^2.0.2",
     "lodash": "^4.17.11",
     "moment": "^2.22.2",
