@@ -142,6 +142,9 @@ export default {
                 case 'verb-transitive':
                   this.partOfSpeech = 'v.'
                   break
+                case 'verb-intransitive':
+                  this.partOfSpeech = 'n.'
+                  break
                 case 'noun':
                   this.partOfSpeech = 'n.'
                   break
@@ -164,6 +167,8 @@ export default {
             }
           })
           .catch(() => {
+            this.hintIcon = 'error_outline'
+            this.partOfSpeech = ''
             console.log('Can not find the word!')
           })
       }

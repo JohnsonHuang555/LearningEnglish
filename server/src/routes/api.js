@@ -85,7 +85,7 @@ router.get('/getUserInfo', (req, res) => {
             _id: '5c2d6edaad96a11da0983f03'
           }, {
             "$push": {
-              loginLog: "2019-02-14"
+              loginLog: today
             },
             "$inc": {
               loginDays: 1
@@ -281,12 +281,22 @@ router.post('/setQuizResult', (req, res) => {
   })
 
   VocabularyModel.updateMany({
-      _id: { "$in": wrongWords }
+      _id: wrongWords
     }, {
-      isWrong: true
+      "$set": { isWrong : true }
     })
-    .then(doc => {
-      res.json(doc)
+    .then(() => {
+      UserInfoModel.findOneAndUpdate({
+        _id: '5c2d6edaad96a11da0983f03'
+      }, {
+        "$inc": { totalQuizzes: 1 }
+      }, { new: true })
+      .then(doc => {
+        res.json(doc)
+      })
+      .catch(err => {
+        res.status(500).json(err)
+      })
     })
     .catch(err => {
       res.status(500).json(err);

@@ -1,5 +1,5 @@
 <template>
-  <v-container fluid grid-list-xl>
+  <v-container fluid grid-list-xl v-scroll="onScroll">
     <v-layout row class="mb-4">
       <v-flex xs6 class="page-title">Vocabulary</v-flex>
       <v-flex xs2 offset-xs1>
@@ -76,7 +76,8 @@ export default {
       ],
       filterVal: 0,
       searchVal: "",
-      isSearching: false
+      isSearching: false,
+      offsetTop: 0
     };
   },
   watch: {
@@ -153,7 +154,10 @@ export default {
       const data = await vocabularyApi.filterWords(this.searchVal);
       this.loadedVocabularies = data;
       this.isSearching = false;
-    }
+    },
+    onScroll (e) {
+        this.offsetTop = e.target.scrollTop
+      }
   }
 };
 </script>

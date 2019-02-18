@@ -7,7 +7,8 @@ let VocabularySchema = new mongoose.Schema({
   answers: Array,
   quizCount: Number,
   isFavorite: Boolean,
-  dateTime: String
+  dateTime: String,
+  isWrong: Boolean
 }, { collection: 'Vocabulary' });
 
 module.exports = db.model('Vocabulary', VocabularySchema);

@@ -46,7 +46,7 @@ export default new Vuex.Store({
       state.quizQuestions = payload
     },
     setQuizResult(state, payload) {
-      state.wrongVocabularies = payload
+      state.userInfo = payload
     },
     setFavoriteWords(state, payload) {
       state.myFavoriteWords = payload
@@ -112,9 +112,10 @@ export default new Vuex.Store({
       const data = await vocabularyApi.getFavoriteWords()
       commit('setFavoriteWords', data)
     },
-    async setQuizResult({ commit }, payload) {
+    async setQuizResult({ commit, dispatch }, payload) {
       const data = await vocabularyApi.setQuizResult(payload)
       commit('setQuizResult', data)
+      dispatch('getWrongWords')
     },
     clearQuizQuestions({commit}) {
       commit('clearQuizQuestions')
