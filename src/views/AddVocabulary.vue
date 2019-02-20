@@ -1,6 +1,6 @@
 <template>
   <v-container fluid grid-list-xl>
-    <v-layout row class="mb-4">
+    <v-layout row class="mb-2">
       <v-flex xs12 class="page-title">Add new vocabulary</v-flex>
     </v-layout>
     <v-layout>
@@ -156,6 +156,9 @@ export default {
                   break
                 case 'interjection':
                   this.partOfSpeech = 'int.'
+                  break
+                case 'preposition':
+                  this.partOfSpeech = 'prep.'
                   break
                 default:
                   this.partOfSpeech = res.data[0].partOfSpeech

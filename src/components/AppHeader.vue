@@ -49,7 +49,7 @@ export default {
         { title: 'Add', icon: 'library_add', router: '/add-vocabulary' },
         { title: 'Quiz', icon: 'alarm', router: '/quiz' },
         { title: 'About', icon: 'info', router: '/about' },
-        { title: 'Settings', icon: 'settings', router: '/settings' },
+        // { title: 'Settings', icon: 'settings', router: '/settings' },
       ],
     }
   },

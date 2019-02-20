@@ -1,12 +1,12 @@
 <template>
   <v-container fluid grid-list-xl>
-    <v-layout row class="mb-4">
+    <v-layout row class="mb-2">
       <v-flex xs12 class="page-title">Dashboard</v-flex>
     </v-layout>
-    <v-layout row class="mb-4">
+    <v-layout row>
       <v-flex v-for="(card, index) in infoCards" :key="index" xs3>
         <div class="info-cards elevation-4">
-          <div class="info-content mb-2">
+          <div class="info-content mb-1">
             <v-icon large :color="card.color">{{ card.icon }}</v-icon>
             <span class="content-title">{{ card.title }}</span>
           </div>
@@ -15,107 +15,104 @@
       </v-flex>
     </v-layout>
     <v-layout row wrap>
-      <v-flex xs8>
-        <div class="card-radius learning-trend elevation-4">
-          <div class="mb-3">Learning Trend</div>
-          <div v-if="isShowTrend">
-            <trend              
-              :data="trendData"
-              :gradient="['#6fa8dc', '#42b983', '#2c3e50']"
-              auto-draw
-              smooth>
-            </trend>
-            <div class="chart-tick">
-              <h4>1</h4>
-              <h4>{{ daysInMonth }}</h4>
-            </div>
-          </div>
-          <v-progress-circular
-            v-else
-            indeterminate
-            color="secondary"
-            :size="50"
-            :width="5"
-            class="progress-circle"
-          ></v-progress-circular>
-        </div>
-      </v-flex>
-      <v-flex xs4>
+      <v-flex xs5>
         <v-date-picker
-          full-width
           v-model="date"
-          class="card-radius elevation-4"
-          type="month"
-        ></v-date-picker>        
+          class="elevation-4"
+          full-width
+          color="primary"
+          :events="arrayEvents"
+          event-color="green lighten-1"
+        ></v-date-picker>
+      </v-flex>
+      <v-flex xs7>
+        <div class="info-cards elevation-4">
+          <div class="info-content mb-2">
+            <span class="content-title">
+              <v-icon class="mr-2">event_note</v-icon>
+              2019-02-20
+            </span>
+            <span class="content-title">
+              Score:
+              <span class="ml-2" :class="{ 'failed': true }">59</span>
+            </span>
+          </div>
+          <div class="grid-container">
+            <div class="grid-item info-content" :class="{ 'wrong-answer': item.isWrong }" v-for="(item, index) in fakeData" :key="index">
+              <span>{{ item.word }}</span>
+              <span>{{ item.answers[0] }}</span>
+            </div>
+          </div>         
+        </div>
       </v-flex>
     </v-layout>
   </v-container>
 </template>
 
 <script>
-import moment from 'moment'
-
 export default {
-  name: 'home',
+  name: "home",
   data() {
     return {
       infoCards: [
-        { id: 1, icon: 'font_download', color: 'primary', title: 'Total words' },
-        { id: 2, icon: 'error', color: 'error', title: 'Wrong words' },
-        { id: 3, icon: 'alarm', color: '#3FD2CD', title: 'Total quizzes' },
-        { id: 4, icon: 'how_to_reg', color: 'warning', title: 'Login days' },
+        {
+          id: 1,
+          icon: "font_download",
+          color: "primary",
+          title: "Total words"
+        },
+        { id: 2, icon: "error", color: "error", title: "Wrong words" },
+        { id: 3, icon: "alarm", color: "#3FD2CD", title: "Total quizzes" },
+        { id: 4, icon: "how_to_reg", color: "warning", title: "Login days" }
       ],
-      trendData: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      rate1: [0, 2, 5, 3, 10, 1, 10, 5, 10, 7, 5, 7, 10, 9, 10],
-      date: moment().format("YYYY-MM"),
-      isShowTrend: true,
-    }
+      date: new Date().toISOString().substr(0, 10),
+      arrayEvents: ["2019-02-18"],
+      fakeData: [
+        { word: "aa", answers: [ '123' ], isWrong: false },
+        { word: "ab", answers: [ '123' ], isWrong: true },
+        { word: "ac", answers: [ '123' ], isWrong: true },
+        { word: "ad", answers: [ '123' ], isWrong: false },
+        { word: "ae", answers: [ '123' ], isWrong: false },
+        { word: "af", answers: [ '123' ], isWrong: false },
+        { word: "ag", answers: [ '123' ], isWrong: false },
+        { word: "ah", answers: [ '123' ], isWrong: false },
+        { word: "ai", answers: [ '123' ], isWrong: false },
+        { word: "aj", answers: [ '123' ], isWrong: false },
+        { word: "ak", answers: [ '123' ], isWrong: false },
+        { word: "al", answers: [ '123' ], isWrong: false },
+        { word: "am", answers: [ '123' ], isWrong: false },
+        { word: "an", answers: [ '123' ], isWrong: true },
+        { word: "ao", answers: [ '123' ], isWrong: false }
+      ]
+    };
   },
   computed: {
     userInfo() {
-      return this.$store.state.userInfo
-    },
-    daysInMonth() {
-      return moment(this.date).daysInMonth()
-    }
-  },
-  watch: {
-    date() {
-      this.isShowTrend = false
-      setTimeout(() => {
-        this.isShowTrend = true
-        this.trendData = this.rate1
-      }, 1000)
-    },
-    userInfo() {
-      const logDays = this.userInfo.loginLog.length
-      if (this.userInfo.loginLog[logDays - 1] !== this.$store.state.today) {
-        console.log('change')
-      }
+      return this.$store.state.userInfo;
     }
   },
   methods: {
     getValue(id) {
-      if (this.userInfo === null)
-        return
+      if (this.userInfo === null) return;
 
       switch (id) {
         case 1:
-          return this.userInfo.totalWords
+          return this.userInfo.totalWords;
         case 2:
-          return this.userInfo.wrongWordCount
+          return this.userInfo.wrongWordCount;
         case 3:
-          return this.userInfo.totalQuizzes
+          return this.userInfo.totalQuizzes;
         case 4:
-          return this.userInfo.loginDays
+          return this.userInfo.loginDays;
       }
     }
   }
-}
+};
 </script>
 
 <style lang="scss" scoped>
 $content: #949494;
+$error: #D2583F;
 
 .container {
   height: 100%;
@@ -130,8 +127,14 @@ $content: #949494;
     justify-content: space-between;
     align-items: center;
     .content-title {
-      font-size: 20px;
+      font-size: 22px;
       color: $content;
+      display: flex;
+      align-items: center;
+      letter-spacing: 1px;
+    }
+    .score {
+      font-size: 30px;
     }
   }
   .info-value {
@@ -139,6 +142,29 @@ $content: #949494;
     text-align: right;
     color: $content;
   }
+}
+
+.grid-container {
+  display: grid;
+  grid-template-columns: auto auto;
+  grid-gap: 6px;
+}
+
+.grid-item {
+  // border: 1px solid #ccc;
+  border-radius: 5px;
+  padding: 2px 12px;
+  font-size: 18px;
+}
+
+.wrong-answer {
+  background-color: #f38b76;
+  color: white;
+}
+
+.failed {
+  color: $error;
+  font-weight: bold;
 }
 
 .card-radius {

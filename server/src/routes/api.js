@@ -76,16 +76,21 @@ router.get('/getUserInfo', (req, res) => {
   UserInfoModel.findOne()
     .then(doc => {
       const obj = JSON.parse(JSON.stringify(doc));
-      if (obj.loginLog.indexOf(today) > 0) {
+      if (obj.loginLog.findIndex(o => o.date === today) > 0) {
         res.json(doc);
       } else {
-        obj.loginLog.push(today)
+        const data = {
+          date: today,
+          questions: [],
+          score: 0
+        }
+        // obj.loginLog.push(data);
 
         UserInfoModel.findOneAndUpdate({
             _id: '5c2d6edaad96a11da0983f03'
           }, {
             "$push": {
-              loginLog: today
+              loginLog: data
             },
             "$inc": {
               loginDays: 1
@@ -283,20 +288,32 @@ router.post('/setQuizResult', (req, res) => {
   VocabularyModel.updateMany({
       _id: wrongWords
     }, {
-      "$set": { isWrong : true }
+      "$set": {
+        isWrong: true
+      },
+      "$inc": {
+        quizCount: 1
+      }
     })
     .then(() => {
       UserInfoModel.findOneAndUpdate({
-        _id: '5c2d6edaad96a11da0983f03'
-      }, {
-        "$inc": { totalQuizzes: 1 }
-      }, { new: true })
-      .then(doc => {
-        res.json(doc)
-      })
-      .catch(err => {
-        res.status(500).json(err)
-      })
+          _id: '5c2d6edaad96a11da0983f03'
+        }, {
+          "$inc": {
+            totalQuizzes: 1
+          },
+          "$add": {
+            wrongWordCount: wrongWords.length
+          }
+        }, {
+          new: true
+        })
+        .then(doc => {
+          res.json(doc)
+        })
+        .catch(err => {
+          res.status(500).json(err)
+        })
     })
     .catch(err => {
       res.status(500).json(err);

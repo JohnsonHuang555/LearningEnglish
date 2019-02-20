@@ -16,6 +16,7 @@ export default new Vuex.Store({
       wrongWordCount: 0,
       loginLog: []
     },
+    loadWordCount: 0, // 讀取單字次數，滾到底讀單字用
     vocabularies: [],
     myFavoriteWords: [],
     todayVocabularyCount: 0, // 當天輸入總和
@@ -61,6 +62,13 @@ export default new Vuex.Store({
     },
     setTodayVocabularyCount(state, payload) {
       state.todayVocabularyCount = payload
+    },
+    setLoadWordCount(state, payload) {
+      if (payload) {
+        state.loadWordCount++
+      } else {
+        state.loadWordCount = 0
+      }
     }
   },
   actions: {
@@ -77,7 +85,7 @@ export default new Vuex.Store({
       const limit = state.limitedVocabularies
       const logDays = payload.loginLog.length
       
-      const previousDay = payload.loginLog[logDays - 2]
+      const previousDay = payload.loginLog[logDays - 2].date
       const previousDayData = await vocabularyApi.getVocabularies(previousDay)
       const todayData = await vocabularyApi.getVocabularies(state.today)
       if (todayData.length === state.questionCount) {
@@ -86,16 +94,28 @@ export default new Vuex.Store({
 
       if (todayData.length === 0) {
         data = await vocabularyApi.getVocabularies(previousDay)
+        commit('setLoadWordCount', true)
       } else if (todayData.length > 0 && todayData.length === limit) {
         data = await vocabularyApi.getVocabularies(state.today)
+        commit('setLoadWordCount', false)
       } else if (todayData.length > 0 && todayData.length < limit) {
         data = previousDayData.concat(todayData)
+        commit('setLoadWordCount', false)
       }
       commit('setTodayVocabularyCount', todayData.length)
       commit('setVocabularies', data)
     },
     async getUserInfo({ commit, dispatch }) {
       await userInfoApi.getUserInfo().then(data => {
+        if (data === undefined) {
+          data = {
+            loginDays: 0,
+            totalWords: 0,
+            totalQuizzes: 0,
+            wrongWordCount: 0,
+            loginLog: []
+          }
+        }
         commit('setUserInfo', data)
         dispatch('getVocabularies', data)
       })      
@@ -138,7 +158,20 @@ export default new Vuex.Store({
       commit
     }, payload) {
       commit('saveSettings', payload)
-    }
+    },
+    // async loadedAnotherDayVocabularies({ state, commit }) {
+    //   commit('setLoading', true)
+    //   const day = state.loadWordCount + 1
+    //   const previousDay = state.userInfo.loginLog[state.userInfo.loginLog.length - (day + 1)]
+    //   const currentVocabularies = state.vocabularies
+    //   await vocabularyApi.getVocabularies(previousDay)
+    //     .then(res => {
+    //       const data = currentVocabularies.concat(res)
+    //       commit('setLoadWordCount', true)
+    //       commit('setVocabularies', data)
+    //       commit('setLoading', false)
+    //     })
+    // }
   },
   getters: {
     loadedVocabularies(state) {

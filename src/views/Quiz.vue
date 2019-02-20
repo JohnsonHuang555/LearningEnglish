@@ -1,6 +1,6 @@
 <template>
   <v-container fluid grid-list-xl>
-    <v-layout row class="mb-4">
+    <v-layout row class="mb-2">
       <v-flex xs6 class="page-title">Quiz</v-flex>
       <v-flex xs6 class="time-area" align-center justify-end>
         <h2 class="mr-5" v-if="quizStatus === 1">{{ currentQuestionNumber }} / {{ questionCount }}</h2>

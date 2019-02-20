@@ -75,7 +75,7 @@ $info: #F5F5F5;
 // 英文字體
 @font-face {
   font-family: custom-sans-serif;
-  src: local(Arial), local(Segoe UI);
+  src: local("Roboto"), local(Segoe UI);
   unicode-range: U+00-024F;
 }
 

@@ -1,6 +1,6 @@
 <template>
   <v-container fluid grid-list-xl>
-    <v-layout row class="mb-4">
+    <v-layout row class="mb-2">
       <v-flex xs12 class="page-title">About</v-flex>
     </v-layout>
     <v-layout row wrap>

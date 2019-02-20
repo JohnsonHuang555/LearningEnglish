@@ -17,6 +17,7 @@ new Vue({
   router,
   store,
   created() {
+    this.$router.push('/')
     // 初始化資料
     this.$store.dispatch('getWrongWords')
     this.$store.dispatch('getUserInfo')

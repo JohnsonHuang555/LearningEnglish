@@ -1,6 +1,6 @@
 <template>
-  <v-container fluid grid-list-xl v-scroll="onScroll">
-    <v-layout row class="mb-4">
+  <v-container fluid grid-list-xl>
+    <v-layout row class="mb-2">
       <v-flex xs6 class="page-title">Vocabulary</v-flex>
       <v-flex xs2 offset-xs1>
         <v-select :items="filterItems" :item-text="filterItems.text" v-model="filterVal"></v-select>
@@ -28,7 +28,7 @@
       tag="div"
       class="layout row wrap"
       style="position: relative;"
-    >
+    > 
       <v-flex
         xs12
         v-for="(vocabulary, index) in loadedVocabularies"
@@ -52,6 +52,14 @@
       >
         <v-alert :value="true" color="error" icon="error">Data no found</v-alert>
       </v-flex>
+        <v-progress-circular
+          v-if="loading"
+          indeterminate
+          color="secondary"
+          :size="50"
+          :width="5"
+          class="progress-circle mb-4"
+        ></v-progress-circular>
     </transition-group>
   </v-container>
 </template>
@@ -77,7 +85,7 @@ export default {
       filterVal: 0,
       searchVal: "",
       isSearching: false,
-      offsetTop: 0
+      loading: false
     };
   },
   watch: {
@@ -95,6 +103,9 @@ export default {
       }
     }
   },
+  created() {
+    window.addEventListener('scroll', this.onScroll);
+  },
   mounted() {
     this.getVocabularies();
 
@@ -107,7 +118,7 @@ export default {
         return this.$store.state.myFavoriteWords
       },
       set() {
-
+        // do nothing to avoid warning
       }
     },
     loadedVocabularies: {
@@ -155,9 +166,18 @@ export default {
       this.loadedVocabularies = data;
       this.isSearching = false;
     },
-    onScroll (e) {
-        this.offsetTop = e.target.scrollTop
+    onScroll () {
+      var d = document.documentElement;
+      var offset = d.scrollTop + window.innerHeight;
+      var height = d.offsetHeight;
+
+      if (offset === height) {        
+        // this.$store.dispatch('loadedAnotherDayVocabularies')
       }
+    }
+  },
+  destroyed () {
+    window.removeEventListener('scroll', this.onScroll);
   }
 };
 </script>
