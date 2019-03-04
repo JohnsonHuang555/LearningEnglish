@@ -119,7 +119,7 @@ export default {
   },
   computed: {
     isDisableAdd() {
-      if (this.newVocabulary === '' || this.answer1 === '') {
+      if (this.newVocabulary === '' || this.answer1 === '' || this.inputingWord) {
         return true
       } else {
         return false

@@ -76,7 +76,7 @@ router.get('/getUserInfo', (req, res) => {
   UserInfoModel.findOne()
     .then(doc => {
       const obj = JSON.parse(JSON.stringify(doc));
-      if (obj.loginLog.findIndex(o => o.date === today) > 0) {
+      if (obj.loginLog.findIndex(o => o.date === today) !== -1) {
         res.json(doc);
       } else {
         const data = {
@@ -84,7 +84,6 @@ router.get('/getUserInfo', (req, res) => {
           questions: [],
           score: 0
         }
-        // obj.loginLog.push(data);
 
         UserInfoModel.findOneAndUpdate({
             _id: '5c2d6edaad96a11da0983f03'
@@ -281,7 +280,7 @@ router.post('/setQuizResult', (req, res) => {
     return res.status(400).send('Request body is missing');
   }
 
-  const wrongWords = req.body.map(item => {
+  const wrongWords = req.body.wrongAnswers.map(item => {
     return item._id
   })
 
@@ -297,13 +296,15 @@ router.post('/setQuizResult', (req, res) => {
     })
     .then(() => {
       UserInfoModel.findOneAndUpdate({
-          _id: '5c2d6edaad96a11da0983f03'
+          _id: '5c2d6edaad96a11da0983f03',
+          "loginLog.date": today
         }, {
           "$inc": {
             totalQuizzes: 1
           },
-          "$add": {
-            wrongWordCount: wrongWords.length
+          "$set": {
+            "loginLog.$.score": Math.round(req.body.score),
+            "loginLog.$.questions": req.body.quizQuestions
           }
         }, {
           new: true

@@ -15,20 +15,21 @@
         ></v-text-field>
       </v-flex>
     </v-layout>
-    <!-- <v-progress-circular
-      v-if="loading"
+    <v-progress-circular
+      v-if="isSearching"
       indeterminate
       color="secondary"
-      :size="50"
-      :width="5"
+      :size="40"
+      :width="4"
       class="progress-circle mb-4"
-    ></v-progress-circular> -->
+    ></v-progress-circular>
     <transition-group
+      v-show="!isSearching"
       name="list-complete"
       tag="div"
       class="layout row wrap"
       style="position: relative;"
-    > 
+    >
       <v-flex
         xs12
         v-for="(vocabulary, index) in loadedVocabularies"
@@ -45,29 +46,21 @@
         <vocabulary-cmp :vocabulary="vocabulary"/>
       </v-flex>
       <v-flex
-        v-if="loadedVocabularies.length === 0"
+        v-if="loadedVocabularies.length === 0 && !isSearching"
         xs12
         class="list-complete-item"
         key="alert"
       >
         <v-alert :value="true" color="error" icon="error">Data no found</v-alert>
       </v-flex>
-        <v-progress-circular
-          v-if="loading"
-          indeterminate
-          color="secondary"
-          :size="50"
-          :width="5"
-          class="progress-circle mb-4"
-        ></v-progress-circular>
     </transition-group>
   </v-container>
 </template>
 
 <script>
-import VocabularyCmp from "@/components/VocabularyCmp.vue";
-import vocabularyApi from "@/api/vocabulary.js";
-import _ from "lodash";
+import VocabularyCmp from "@/components/VocabularyCmp.vue"
+import vocabularyApi from "@/api/vocabulary.js"
+import _ from "lodash"
 
 export default {
   name: "vocabulary",
@@ -85,32 +78,31 @@ export default {
       filterVal: 0,
       searchVal: "",
       isSearching: false,
-      loading: false
-    };
+    }
   },
   watch: {
     searchVal(val) {
       if (val) {
-        this.filterVal = 0;
-        this.isSearching = "primary";
+        this.filterVal = 0
+        this.isSearching = "primary"
       } else {
-        this.isSearching = false;
+        this.isSearching = false
       }
     },
     filterVal(val) {
       if (val) {
-        this.searchVal = "";
+        this.searchVal = ""
       }
     }
   },
   created() {
-    window.addEventListener('scroll', this.onScroll);
+    window.addEventListener('scroll', this.onScroll)
   },
   mounted() {
-    this.getVocabularies();
+    this.getVocabularies()
 
     // 先準備好 myfavorite 單字
-    this.getFavoriteWords();
+    this.getFavoriteWords()
   },
   computed: {
     myFavoriteWords: {
@@ -124,52 +116,52 @@ export default {
     loadedVocabularies: {
       get() {
         if (this.filterVal === 2) {
-          return this.wrongVocabularies;
+          return this.wrongVocabularies
         } else if (this.filterVal === 1) {
-          return this.myFavoriteWords;
+          return this.myFavoriteWords
         } else if (this.searchVal) {
-          return this.vocabularies;
+          return this.vocabularies
         } else {
-          return this.$store.getters.loadedVocabularies;
+          return this.$store.getters.loadedVocabularies
         }
       },
       set(newVal) {
-        this.vocabularies = newVal;
+        this.vocabularies = newVal
       }
     },
     wrongVocabularies() {
-      return this.$store.state.wrongVocabularies;
+      return this.$store.state.wrongVocabularies
     }
   },
   methods: {
     getVocabularies() {
-      this.$store.dispatch("getVocabularies");
+      this.$store.dispatch("getVocabularies")
     },
     debounceInput: _.debounce(function(e) {
       if (e) {
-        this.filterWords();
+        this.filterWords()
       }
     }, 1000),
     dateTimeIndex(dateTime) {
       let i = _.findIndex(this.loadedVocabularies, o => {
-        return o.dateTime == dateTime;
-      });
+        return o.dateTime == dateTime
+      })
 
-      return i;
+      return i
     },
     async getFavoriteWords() {
-      const data = await vocabularyApi.getFavoriteWords();
-      this.myFavoriteWords = data;
+      const data = await vocabularyApi.getFavoriteWords()
+      this.myFavoriteWords = data
     },
     async filterWords() {
-      const data = await vocabularyApi.filterWords(this.searchVal);
-      this.loadedVocabularies = data;
-      this.isSearching = false;
+      const data = await vocabularyApi.filterWords(this.searchVal)
+      this.loadedVocabularies = data
+      this.isSearching = false
     },
     onScroll () {
-      var d = document.documentElement;
-      var offset = d.scrollTop + window.innerHeight;
-      var height = d.offsetHeight;
+      var d = document.documentElement
+      var offset = d.scrollTop + window.innerHeight
+      var height = d.offsetHeight
 
       if (offset === height) {        
         // this.$store.dispatch('loadedAnotherDayVocabularies')
@@ -177,9 +169,9 @@ export default {
     }
   },
   destroyed () {
-    window.removeEventListener('scroll', this.onScroll);
+    window.removeEventListener('scroll', this.onScroll)
   }
-};
+}
 </script>
 
 <style lang="scss" scoped>

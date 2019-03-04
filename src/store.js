@@ -73,7 +73,7 @@ export default new Vuex.Store({
   },
   actions: {
     async getVocabularies({ state, commit }, payload) {
-      if (payload === undefined) {
+      if (payload === undefined || payload.loginLog.length === 0) {
         return
       }
 
@@ -84,10 +84,15 @@ export default new Vuex.Store({
       // 當天有輸入未輸滿 顯示最後登入的那一天加當天
       const limit = state.limitedVocabularies
       const logDays = payload.loginLog.length
-      
+      const todayData = await vocabularyApi.getVocabularies(state.today)
+      if (logDays === 1) {
+        commit('setTodayVocabularyCount', todayData.length)
+        commit('setVocabularies', todayData)
+        return
+      }
+
       const previousDay = payload.loginLog[logDays - 2].date
       const previousDayData = await vocabularyApi.getVocabularies(previousDay)
-      const todayData = await vocabularyApi.getVocabularies(state.today)
       if (todayData.length === state.questionCount) {
         commit('setQuizQuetions', todayData)
       }
@@ -118,7 +123,7 @@ export default new Vuex.Store({
         }
         commit('setUserInfo', data)
         dispatch('getVocabularies', data)
-      })      
+      })
     },
     async getWrongWords({ commit }) {
       const data = await vocabularyApi.getWrongWords()
@@ -150,7 +155,7 @@ export default new Vuex.Store({
     async deleteVocabulary({ dispatch }, payload) {
       await vocabularyApi.deleteVocabulary(payload)
       await userInfoApi.minusTotalWords()
-      
+
       // update
       dispatch('getUserInfo')
     },

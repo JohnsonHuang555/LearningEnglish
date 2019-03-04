@@ -30,11 +30,16 @@ export default {
     let wrongAnswer = this.quizResult.filter(item => !item.isCorrect)
     this.correctCount = 100 - ((wrongAnswer.length / this.$store.state.questionCount) * 100)
 
-    this.$store.dispatch('setQuizResult', wrongAnswer)
+    const data = {
+      wrongAnswers: wrongAnswer,
+      score: this.correctCount,
+      quizQuestions: this.quizResult
+    }
+    this.$store.dispatch('setQuizResult', data)
   },
   computed: {
     animatedNumber() {
-      return this.tweenedNumber.toFixed(0);
+      return this.tweenedNumber.toFixed(0)
     }
   },
   watch: {

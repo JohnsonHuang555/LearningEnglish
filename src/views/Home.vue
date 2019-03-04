@@ -30,19 +30,30 @@
           <div class="info-content mb-2">
             <span class="content-title">
               <v-icon class="mr-2">event_note</v-icon>
-              2019-02-20
+              {{ date }}
             </span>
             <span class="content-title">
               Score:
               <span class="ml-2" :class="{ 'failed': true }">59</span>
             </span>
           </div>
-          <div class="grid-container">
-            <div class="grid-item info-content" :class="{ 'wrong-answer': item.isWrong }" v-for="(item, index) in fakeData" :key="index">
+          <v-progress-circular
+            v-if="loading"
+            indeterminate
+            color="secondary"
+            :size="40"
+            :width="4"
+            class="progress-circle mb-4"
+          ></v-progress-circular>
+          <div v-if="learnRecord.length !== 0 && !loading" class="grid-container">
+            <div class="grid-item info-content" :class="{ 'wrong-answer': !item.isCorrect }" v-for="(item, index) in learnRecord" :key="index">
               <span>{{ item.word }}</span>
               <span>{{ item.answers[0] }}</span>
             </div>
-          </div>         
+          </div>
+          <div v-if="learnRecord.length === 0 && !loading">
+            <span>No data found</span>
+          </div>
         </div>
       </v-flex>
     </v-layout>
@@ -65,49 +76,59 @@ export default {
         { id: 3, icon: "alarm", color: "#3FD2CD", title: "Total quizzes" },
         { id: 4, icon: "how_to_reg", color: "warning", title: "Login days" }
       ],
-      date: new Date().toISOString().substr(0, 10),
-      arrayEvents: ["2019-02-18"],
-      fakeData: [
-        { word: "aa", answers: [ '123' ], isWrong: false },
-        { word: "ab", answers: [ '123' ], isWrong: true },
-        { word: "ac", answers: [ '123' ], isWrong: true },
-        { word: "ad", answers: [ '123' ], isWrong: false },
-        { word: "ae", answers: [ '123' ], isWrong: false },
-        { word: "af", answers: [ '123' ], isWrong: false },
-        { word: "ag", answers: [ '123' ], isWrong: false },
-        { word: "ah", answers: [ '123' ], isWrong: false },
-        { word: "ai", answers: [ '123' ], isWrong: false },
-        { word: "aj", answers: [ '123' ], isWrong: false },
-        { word: "ak", answers: [ '123' ], isWrong: false },
-        { word: "al", answers: [ '123' ], isWrong: false },
-        { word: "am", answers: [ '123' ], isWrong: false },
-        { word: "an", answers: [ '123' ], isWrong: true },
-        { word: "ao", answers: [ '123' ], isWrong: false }
-      ]
-    };
+      loading: false,
+      date: ''
+    }
+  },
+  watch: {
+    date() {
+      this.loading = true
+      setTimeout(() => {
+        this.loading = false
+      }, 1000)
+    }
+  },
+  mounted() {
+    this.date = this.$store.state.today
   },
   computed: {
     userInfo() {
-      return this.$store.state.userInfo;
+      return this.$store.state.userInfo
+    },
+    arrayEvents() {
+      const events = this.userInfo.loginLog.map(item => {
+        return item.date
+      })
+
+      return events
+    },
+    learnRecord() {
+      const data = this.userInfo.loginLog.filter(item => {
+        return item.date == this.date
+      })
+      if (data.length === 0) {
+        return []
+      }
+      return data[0].questions
     }
   },
   methods: {
     getValue(id) {
-      if (this.userInfo === null) return;
+      if (this.userInfo === null) return
 
       switch (id) {
         case 1:
-          return this.userInfo.totalWords;
+          return this.userInfo.totalWords
         case 2:
-          return this.userInfo.wrongWordCount;
+          return this.$store.state.wrongVocabularies.length
         case 3:
-          return this.userInfo.totalQuizzes;
+          return this.userInfo.totalQuizzes
         case 4:
-          return this.userInfo.loginDays;
+          return this.userInfo.loginDays
       }
     }
   }
-};
+}
 </script>
 
 <style lang="scss" scoped>
@@ -127,7 +148,7 @@ $error: #D2583F;
     justify-content: space-between;
     align-items: center;
     .content-title {
-      font-size: 22px;
+      font-size: 18px;
       color: $content;
       display: flex;
       align-items: center;
