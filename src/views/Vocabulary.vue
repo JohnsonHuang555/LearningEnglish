@@ -32,17 +32,37 @@
     >
       <v-flex
         xs12
-        v-for="(vocabulary, index) in loadedVocabularies"
+        v-for="vocabulary in loadedVocabularies"
         :key="vocabulary._id"
         class="list-complete-item"
       >
-        <div
+        <!-- <div
           v-if="dateTimeIndex(vocabulary.dateTime) === index
             && $store.state.today !== vocabulary.dateTime
             && $store.state.todayVocabularyCount !== 0
             && filterVal === 0"
           class="date-time mb-4"
-        >{{ vocabulary.dateTime }}</div>
+        >{{ vocabulary.dateTime }}</div> -->
+        <vocabulary-cmp :vocabulary="vocabulary"/>
+      </v-flex>
+      <v-flex
+        v-if="loadedVocabularies.length === 0 && !isSearching"
+        xs12
+        class="list-complete-item"
+        key="alert"
+      >
+        <v-alert :value="true" color="error" icon="error">Data no found</v-alert>
+      </v-flex>
+      <v-flex
+        xs12
+        v-for="vocabulary in loadedAnotherDayVocabularies"
+        :key="vocabulary._id"
+        class="list-complete-item"
+      >
+        <!-- <div
+          v-if="dateTimeIndex(vocabulary.dateTime) === index"
+          class="date-time mb-4"
+        >{{ vocabulary.dateTime }}</div> -->
         <vocabulary-cmp :vocabulary="vocabulary"/>
       </v-flex>
       <v-flex
@@ -78,6 +98,8 @@ export default {
       filterVal: 0,
       searchVal: "",
       isSearching: false,
+      loadedAnotherDayVocabularies: [],
+      loadedTimes: 1
     }
   },
   watch: {
@@ -90,6 +112,8 @@ export default {
       }
     },
     filterVal(val) {
+      this.loadedAnotherDayVocabularies = []
+      this.loadedTimes = 1
       if (val) {
         this.searchVal = ""
       }
@@ -131,6 +155,9 @@ export default {
     },
     wrongVocabularies() {
       return this.$store.state.wrongVocabularies
+    },
+    loadedLoginDays() {
+      return this.$store.getters.loadedLoginDays
     }
   },
   methods: {
@@ -163,9 +190,22 @@ export default {
       var offset = d.scrollTop + window.innerHeight
       var height = d.offsetHeight
 
-      if (offset === height) {        
-        // this.$store.dispatch('loadedAnotherDayVocabularies')
+      if (offset === height && this.filterVal === 0 && this.searchVal === '') {
+        this.getAnotherDayVocabularies()
       }
+    },
+    async getAnotherDayVocabularies() {
+      const totalDays = this.loadedLoginDays.length
+      if (this.loadedTimes >= totalDays) {
+        return
+      }
+      const previousDay = this.loadedLoginDays[totalDays - this.loadedTimes - 1]
+      await vocabularyApi.getVocabularies(previousDay).then(data => {
+        this.loadedTimes++
+        data.forEach(item => {
+          this.loadedAnotherDayVocabularies.push(item)
+        })
+      })
     }
   },
   destroyed () {

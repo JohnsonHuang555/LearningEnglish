@@ -34,7 +34,7 @@
             </span>
             <span class="content-title">
               Score:
-              <span class="ml-2" :class="{ 'failed': true }">59</span>
+              <span class="ml-2" :class="{ 'failed': !isPass, 'pass': isPass }">{{ score }}</span>
             </span>
           </div>
           <v-progress-circular
@@ -77,12 +77,15 @@ export default {
         { id: 4, icon: "how_to_reg", color: "warning", title: "Login days" }
       ],
       loading: false,
-      date: ''
+      date: '',
+      learnRecord: [],
+      score: 0
     }
   },
   watch: {
     date() {
       this.loading = true
+      this.getLearnRecord()
       setTimeout(() => {
         this.loading = false
       }, 1000)
@@ -102,14 +105,8 @@ export default {
 
       return events
     },
-    learnRecord() {
-      const data = this.userInfo.loginLog.filter(item => {
-        return item.date == this.date
-      })
-      if (data.length === 0) {
-        return []
-      }
-      return data[0].questions
+    isPass() {
+      return this.score >= 60 ? true : false
     }
   },
   methods: {
@@ -126,6 +123,22 @@ export default {
         case 4:
           return this.userInfo.loginDays
       }
+    },
+    getLearnRecord() {
+      if (this.userInfo.loginLog.length === 0) {
+        return
+      }
+
+      const data = this.userInfo.loginLog.filter(item => {
+        return item.date == this.date
+      })
+
+      if (data.length === 0) {
+        this.learnRecord = []
+        return
+      }
+      this.score = data[0].score
+      this.learnRecord = data[0].questions
     }
   }
 }
@@ -134,6 +147,7 @@ export default {
 <style lang="scss" scoped>
 $content: #949494;
 $error: #D2583F;
+$success: #18ab10;
 
 .container {
   height: 100%;
@@ -169,10 +183,10 @@ $error: #D2583F;
   display: grid;
   grid-template-columns: auto auto;
   grid-gap: 6px;
+  border: 1px solid #eee;
 }
 
 .grid-item {
-  // border: 1px solid #ccc;
   border-radius: 5px;
   padding: 2px 12px;
   font-size: 18px;
@@ -186,6 +200,10 @@ $error: #D2583F;
 .failed {
   color: $error;
   font-weight: bold;
+}
+
+.pass {
+  color: $success;
 }
 
 .card-radius {

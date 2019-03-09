@@ -24,6 +24,7 @@ export default new Vuex.Store({
     wrongVocabularies: [], // 答錯的單字，錯誤清單
     loading: false,
     quizQuestions: [],
+    isQuiz: false, // 紀錄考試狀態，考試後關閉刪除單字功能
     today: moment().format("YYYY-MM-DD"),
     questionCount: 15, // 總題數 五題為錯誤清單 + 之前的單字
     quizTime: 600, // 考試時間 (秒)
@@ -69,6 +70,9 @@ export default new Vuex.Store({
       } else {
         state.loadWordCount = 0
       }
+    },
+    setQuizStatus(state) {
+      state.isQuiz = true
     }
   },
   actions: {
@@ -140,6 +144,7 @@ export default new Vuex.Store({
     async setQuizResult({ commit, dispatch }, payload) {
       const data = await vocabularyApi.setQuizResult(payload)
       commit('setQuizResult', data)
+      commit('setQuizStatus')
       dispatch('getWrongWords')
     },
     clearQuizQuestions({commit}) {
@@ -186,9 +191,6 @@ export default new Vuex.Store({
       })
       return tempVocabulary.reverse()
     },
-    errorMsg(state) {
-      return state.errorMsg
-    },
     quizQuestions(state) {
       return state.quizQuestions
     },
@@ -203,6 +205,11 @@ export default new Vuex.Store({
     },
     language(state) {
       return state.appLanguage
+    },
+    loadedLoginDays(state) {
+      return state.userInfo.loginLog.map(item => {
+        return item.date
+      })
     }
   }
 })

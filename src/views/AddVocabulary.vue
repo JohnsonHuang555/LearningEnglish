@@ -12,7 +12,7 @@
             placeholder="New word"
             v-model="newVocabulary"
             @input="debounceInput"
-          ></v-text-field>          
+          ></v-text-field>
           <v-btn
             :loading="inputingWord"
             class="btn-add"
@@ -20,7 +20,7 @@
             disabled
             icon>
             <v-icon medium>{{ hintIcon }}</v-icon>
-          </v-btn>          
+          </v-btn>
         </div>
         <div class="btn-group">
           <v-text-field
@@ -131,7 +131,7 @@ export default {
   },
   methods: {
     debounceInput: _.debounce(function(e) {
-      if (e) {        
+      if (e) {
         axios.get(`https://api.wordnik.com/v4/word.json/${e}/definitions?useCanonical=false&limit=200&api_key=${this.apiKey}`)
           .then(res => {
             this.inputingWord = false
@@ -159,6 +159,9 @@ export default {
                   break
                 case 'preposition':
                   this.partOfSpeech = 'prep.'
+                  break
+                case 'conjunction':
+                  this.partOfSpeech = 'conj.'
                   break
                 default:
                   this.partOfSpeech = res.data[0].partOfSpeech
@@ -236,7 +239,6 @@ export default {
 
       this.$refs.word.focus()
       this.clearAll()
-      
     },
     clearAll() {
       this.newVocabulary = ''
