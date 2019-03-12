@@ -10,6 +10,11 @@ This app is for anyone who wants to learn English. Enter unfamiliar words every 
 yarn
 ```
 
+### Build for production
+```
+yarn electron:build
+```
+
 ### Compiles and hot-reloads for development
 ```
 yarn electron:serve
