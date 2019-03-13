@@ -3,6 +3,9 @@
 ## Overview
 This app is for anyone who wants to learn English. Enter unfamiliar words every day to test to deepen the familiarity of the words. This app also records the user's learning trajectory to track the progress of daily learning.
 
+## Screenshot
+![image](https://github.com/JohnsonHuang555/LearningEnglish/blob/master/Screenshot.jpg)
+
 ## Client setup
 
 ### Install packages
