@@ -7,17 +7,18 @@
         <v-icon
           medium
           class="mr-2"
-          :class="remainTimeAlert ? 'animated infinite headShake': ''"
+          :class="remainTimeAlert && counter !== $store.state.quizTime ? 'animated infinite headShake': ''"
           :color="remainTimeAlert ? 'error': 'content'"
           >alarm</v-icon>
         <h2 :class="{'remain-alert': remainTimeAlert }">{{ convertSeconds(quizTime - counter) }}</h2>
       </v-flex>
     </v-layout>
     <v-layout row wrap class="question-layout" :style="[quizStatus !== 3 ? { height: '70vh' } : null ]">
-      <v-flex xs12>        
+      <v-flex xs12>
         <quiz-prepare v-if="quizStatus === 0" @startQuiz="startQuizHandler"/>
         <quizzing
           v-if="quizStatus === 1 && !isLoading"
+          :remainTime="counter"
           @nextQuestion="nextQuestionHandler"
           @quizResult="quizResultHandler"/>
         <quiz-result
@@ -112,6 +113,7 @@ export default {
   },
   destroyed() {
     // 離開考試，銷毀考試卷
+    this.counter = 0
     this.$store.dispatch('clearQuizQuestions')
   }
 }

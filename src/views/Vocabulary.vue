@@ -59,19 +59,7 @@
         :key="vocabulary._id"
         class="list-complete-item"
       >
-        <!-- <div
-          v-if="dateTimeIndex(vocabulary.dateTime) === index"
-          class="date-time mb-4"
-        >{{ vocabulary.dateTime }}</div> -->
         <vocabulary-cmp :vocabulary="vocabulary"/>
-      </v-flex>
-      <v-flex
-        v-if="loadedVocabularies.length === 0 && !isSearching"
-        xs12
-        class="list-complete-item"
-        key="alert"
-      >
-        <v-alert :value="true" color="error" icon="error">Data no found</v-alert>
       </v-flex>
     </transition-group>
   </v-container>
@@ -99,7 +87,7 @@ export default {
       searchVal: "",
       isSearching: false,
       loadedAnotherDayVocabularies: [],
-      loadedTimes: 1
+      loadedTimes: 1,
     }
   },
   watch: {
@@ -158,6 +146,12 @@ export default {
     },
     loadedLoginDays() {
       return this.$store.getters.loadedLoginDays
+    },
+    todayVocabularyCount() {
+      return this.$store.state.todayVocabularyCount
+    },
+    limitedVocabularies() {
+      return this.$store.state.limitedVocabularies
     }
   },
   methods: {
@@ -195,11 +189,21 @@ export default {
       }
     },
     async getAnotherDayVocabularies() {
+      // TODO hard to clean code
       const totalDays = this.loadedLoginDays.length
       if (this.loadedTimes >= totalDays) {
         return
       }
-      const previousDay = this.loadedLoginDays[totalDays - this.loadedTimes - 1]
+      let previousDay = ''
+      previousDay = this.loadedLoginDays[totalDays - this.loadedTimes - 1]
+      if (this.todayVocabularyCount === 0 || this.todayVocabularyCount < this.limitedVocabularies) {
+        previousDay = this.loadedLoginDays[totalDays - this.loadedTimes - 1 - 1]
+      }
+
+      if (previousDay === undefined) {
+        return
+      }
+
       await vocabularyApi.getVocabularies(previousDay).then(data => {
         this.loadedTimes++
         data.forEach(item => {

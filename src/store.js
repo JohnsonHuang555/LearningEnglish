@@ -27,7 +27,7 @@ export default new Vuex.Store({
     isQuiz: false, // 紀錄考試狀態，考試後關閉刪除單字功能
     today: moment().format("YYYY-MM-DD"),
     questionCount: 15, // 總題數 五題為錯誤清單 + 之前的單字
-    quizTime: 600, // 考試時間 (秒)
+    quizTime: 100, // 考試時間 (秒)
     appLanguage: 0, // 0 En, 1 zh-tw
     mode: 1 // Mode 1: wordCount 10, quizQuestions: 15 ... Mode 2: wordCount: 20, quizQuestions: 25
   },

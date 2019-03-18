@@ -14,8 +14,5 @@ export default {
     }).then(req => {
       return req.data
     })
-    .catch(err => {
-      console.log(err, resource)
-    })
   }
 };

@@ -163,6 +163,9 @@ export default {
                 case 'conjunction':
                   this.partOfSpeech = 'conj.'
                   break
+                case 'pronoun':
+                  this.partOfSpeech = 'pron.'
+                  break
                 default:
                   this.partOfSpeech = res.data[0].partOfSpeech
                   break
@@ -186,6 +189,10 @@ export default {
       this.addCount--
     },
     addVocabulary() {
+      if (this.isDisableAdd) {
+        return
+      }
+
       if (this.$store.state.todayVocabularyCount >= 10) {
         this.errorMsg = '超過10個'
         this.isShowSnackbar = true

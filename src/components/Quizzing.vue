@@ -39,10 +39,38 @@ export default {
       isShowSubmit: false
     };
   },
+  props: {
+    remainTime: {
+      type: Number,
+      default: 0, // 300 即為時間結束
+      required: true
+    }
+  },
   computed: {
     quizQuestions() {
       let questions = this.$store.getters.quizQuestions;
       return _.shuffle(questions);
+    },
+    quizTime() {
+      return this.$store.state.quizTime
+    }
+  },
+  watch: {
+    remainTime(val) {
+      if (val === this.quizTime) {
+        this.quizQuestions.forEach((item, i) => {
+          if (i < this.questionNumber - 1) {
+            return
+          }
+
+          this.answerSheet.push({
+            ...item,
+            isCorrect: false
+          })
+        })
+
+        this.$emit("quizResult", this.answerSheet);
+      }
     }
   },
   methods: {
