@@ -13,7 +13,7 @@
   "dependencies": {
     "animate.css": "^3.7.0",
     "axios": "^0.18.0",
-    "gsap": "^2.0.2",
+    "gsap": "^3.6.0",
     "lodash": "^4.17.11",
     "moment": "^2.22.2",
     "vue": "^2.5.17",
